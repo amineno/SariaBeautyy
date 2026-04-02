@@ -39,9 +39,17 @@ app.use(globalLimiter);
 const corsOptions = {};
 
 if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGIN) {
-  const allowedOrigins = process.env.CORS_ORIGIN.split(',').map((o) => o.trim());
+  const normalizeOrigin = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    return raw.replace(/\/$/, '').toLowerCase();
+  };
+  const allowedOrigins = process.env.CORS_ORIGIN.split(',')
+    .map((o) => normalizeOrigin(o))
+    .filter(Boolean);
   corsOptions.origin = (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (!origin || allowedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -177,6 +185,9 @@ seedAdmin();
 seedAboutPage();
 
 app.use((err, req, res, next) => {
+  if (err && err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ message: err.message });
+  }
   const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   res.status(statusCode).json({ message: err.message || 'Server Error' });
 });

@@ -468,19 +468,30 @@ const buildProductsFromImages = () => {
   }
 };
 
+let seedPromise = null;
+
+const ensureProductsSeeded = async () => {
+  if (seedPromise) return seedPromise;
+  seedPromise = (async () => {
+    const count = await Product.countDocuments();
+    if (count > 0) return;
+    const built = buildProductsFromImages();
+    if (built.length > 0) {
+      await Product.insertMany(built);
+      console.log('Data Seeded from images');
+    }
+  })().finally(() => {
+    seedPromise = null;
+  });
+  return seedPromise;
+};
+
 // @desc    Fetch all products with filters, search and sort
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
   try {
-    const count = await Product.countDocuments();
-    if (count === 0) {
-      const built = buildProductsFromImages();
-      if (built.length > 0) {
-        await Product.insertMany(built);
-        console.log('Data Seeded from images');
-      }
-    }
+    await ensureProductsSeeded();
 
     const { keyword, category, sort } = req.query;
 
@@ -529,6 +540,7 @@ const getProducts = async (req, res) => {
 // @access  Public
 const getTopProducts = async (req, res) => {
   try {
+    await ensureProductsSeeded();
     // For now, let's use highest rated as "Best Sellers" proxy
     const products = await Product.find({})
       .sort({ rating: -1, numReviews: -1 })
