@@ -17,19 +17,17 @@ if (!googleClientId || googleClientId === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <HelmetProvider>
-      <GoogleOAuthProvider clientId={googleClientId}>
-        <AuthProvider>
-          <CurrencyProvider>
-            <ThemeProvider>
-              <CartProvider>
-                <App />
-              </CartProvider>
-            </ThemeProvider>
-          </CurrencyProvider>
-        </AuthProvider>
-      </GoogleOAuthProvider>
-    </HelmetProvider>
-  </React.StrictMode>,
+  <HelmetProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <AuthProvider>
+        <CurrencyProvider>
+          <ThemeProvider>
+            <CartProvider>
+              <App />
+            </CartProvider>
+          </ThemeProvider>
+        </CurrencyProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  </HelmetProvider>,
 )
