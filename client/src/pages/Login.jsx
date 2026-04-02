@@ -11,7 +11,7 @@ const Login = () => {
   const { login, googleLogin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get('redirect') || '/';
@@ -112,7 +112,6 @@ const Login = () => {
               theme="filled_blue"
               text="signin_with"
               shape="pill"
-              locale={i18n.language}
             />
           </div>
           
