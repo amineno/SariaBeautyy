@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const bcrypt = require('bcryptjs');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -133,9 +134,10 @@ const seedAdmin = async () => {
     const password = process.env.ADMIN_PASSWORD;
     const name = process.env.ADMIN_NAME || 'Administrator';
     if (email && password) {
-      const exists = await User.findOne({ email });
+      const normalizedEmail = String(email).trim().toLowerCase();
+      const exists = await User.findOne({ email: normalizedEmail });
       if (!exists) {
-        const admin = await User.create({ name, email, password, isAdmin: true });
+        const admin = await User.create({ name, email: normalizedEmail, password, isAdmin: true });
         console.log(`Seeded admin: ${admin.email}`);
       } else {
         let shouldSave = false;
@@ -148,8 +150,14 @@ const seedAdmin = async () => {
           shouldSave = true;
         }
         const forceReset = String(process.env.ADMIN_FORCE_RESET || '').toLowerCase() === 'true';
-        if (!exists.password || forceReset) {
+        const passwordMatches =
+          exists.password && (await bcrypt.compare(String(password), String(exists.password)));
+        if (!exists.password || forceReset || !passwordMatches) {
           exists.password = password;
+          shouldSave = true;
+        }
+        if (exists.email !== normalizedEmail) {
+          exists.email = normalizedEmail;
           shouldSave = true;
         }
         if (shouldSave) {
