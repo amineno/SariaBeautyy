@@ -137,6 +137,25 @@ const seedAdmin = async () => {
       if (!exists) {
         const admin = await User.create({ name, email, password, isAdmin: true });
         console.log(`Seeded admin: ${admin.email}`);
+      } else {
+        let shouldSave = false;
+        if (!exists.isAdmin) {
+          exists.isAdmin = true;
+          shouldSave = true;
+        }
+        if (!exists.name) {
+          exists.name = name;
+          shouldSave = true;
+        }
+        const forceReset = String(process.env.ADMIN_FORCE_RESET || '').toLowerCase() === 'true';
+        if (!exists.password || forceReset) {
+          exists.password = password;
+          shouldSave = true;
+        }
+        if (shouldSave) {
+          await exists.save();
+          console.log(`Admin ensured: ${exists.email}`);
+        }
       }
     }
   } catch (e) {
