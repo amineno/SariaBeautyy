@@ -156,11 +156,21 @@ const googleLogin = asyncHandler(async (req, res) => {
   }
 
   try {
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    console.log('Verifying Google Token with Client ID:', process.env.GOOGLE_CLIENT_ID);
+    const envClientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+    const envClientIds = String(process.env.GOOGLE_CLIENT_IDS || '').trim();
+    const clientIds = [envClientId, ...envClientIds.split(',')]
+      .map((v) => String(v || '').trim())
+      .filter(Boolean);
+
+    if (clientIds.length === 0) {
+      res.status(503);
+      throw new Error('Google OAuth is not configured');
+    }
+
+    const client = new OAuth2Client(clientIds[0]);
     const ticket = await client.verifyIdToken({
       idToken: token,
-      // audience: process.env.GOOGLE_CLIENT_ID, // Disabled strict audience check for debugging
+      audience: clientIds,
     });
     const payload = ticket.getPayload();
     const { email, name, sub, email_verified } = payload;
@@ -198,7 +208,7 @@ const googleLogin = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Google Auth Error Details:', error.message);
     res.status(401).json({ message: 'Google authentication failed: ' + error.message });
-    throw new Error('Google authentication failed: ' + error.message);
+    return;
   }
 });
 
