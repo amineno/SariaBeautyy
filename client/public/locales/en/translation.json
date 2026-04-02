@@ -1,0 +1,585 @@
+{
+  "welcome": "Welcome to Saria Beauty",
+  "tagline": "Elegant. Feminine. Luxurious.",
+  "shop_now": "Shop Now",
+  "featured_products": "Featured Products",
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "reviews": "Reviews",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "category": {
+    "all": "All",
+    "beauty": "Beauty",
+    "skincare": "Skincare",
+    "haircare": "Haircare",
+    "bodycare": "Bodycare",
+    "fragrance": "Fragrance",
+    "tools": "Tools",
+    "collection": "Collection"
+  },
+  "auth": {
+    "sign_in_to_your_account": "Sign in to your account",
+    "email_address": "Email address",
+    "password": "Password",
+    "sign_in": "Sign in",
+    "dont_have_an_account": "Don't have an account?",
+    "register_here": "Register here",
+    "create_account": "Create Account",
+    "full_name": "Full Name",
+    "register": "Register",
+    "already_have_an_account": "Already have an account?",
+    "sign_in_here": "Sign in here",
+    "welcome_back": "Welcome back, {{name}}!",
+    "login_failed": "Login failed",
+    "account_created": "Account created successfully!",
+    "registration_failed": "Registration failed",
+    "logged_out": "Logged out successfully",
+    "or_continue_with": "Or continue with",
+    "google_login_failed": "Google Login Failed"
+  },
+  "profile": {
+    "title": "User Profile",
+    "save_changes": "Save Changes",
+    "edit_profile": "Edit Profile",
+    "name": "Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "password_placeholder": "Leave blank to keep current password",
+    "confirm_password_placeholder": "Confirm new password",
+    "saving": "Saving...",
+    "update_btn": "Update Profile",
+    "login_required": "Please log in to view your profile.",
+    "passwords_mismatch": "Passwords do not match",
+    "update_success": "Profile updated successfully",
+    "update_error": "Failed to update profile",
+    "my_orders": "My Orders",
+    "loading_orders": "Loading orders...",
+    "no_orders": "You have not placed any orders yet.",
+    "order": "Order",
+    "view_details": "View Details",
+    "date": "Date",
+    "total": "Total",
+    "paid_on": "Paid on {{date}}",
+    "not_paid": "Not Paid",
+    "delivered_on": "Delivered on {{date}}",
+    "not_delivered": "Not Delivered",
+    "items": "Items",
+    "each": "each",
+    "name_placeholder": "Enter name",
+    "email_placeholder": "Enter email",
+    "enter_password_placeholder": "Enter password"
+  },
+  "hero": {
+    "premium_badge": "Premium Beauty Collection",
+    "title": "Discover Your Natural Beauty",
+    "subtitle": "Premium cosmetics for the modern woman"
+  },
+  "confirm": {
+    "logout_title": "Confirm Logout",
+    "logout_message": "Are you sure you want to log out?"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "message": "Sorry, the requested page does not exist.",
+    "back_home": "Back to home"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "paragraph": "Elegance and self-care redefined through a curated collection of premium beauty products.",
+    "navigation": "Navigation",
+    "shop": "Shop",
+    "reviews": "Reviews",
+    "support": "Support",
+    "my_account": "My Account",
+    "cart": "Cart",
+    "faq": "FAQ",
+    "newsletter_title": "Stay Informed",
+    "newsletter_desc": "Subscribe to our newsletter for exclusive offers.",
+    "email_placeholder": "Your email",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "shop": {
+    "title": "Our Shop",
+    "subtitle": "Discover our collection of premium beauty products designed to elevate your unique style.",
+    "search_placeholder": "Search products...",
+    "no_products_title": "No products found",
+    "no_products_desc": "Try adjusting your search or filters to find what you're looking for.",
+    "clear_filters": "Clear all filters",
+    "sort": {
+      "newest": "Newest First",
+      "price_low_to_high": "Price: Low to High",
+      "price_high_to_low": "Price: High to Low",
+      "highest_rated": "Highest Rated"
+    }
+  },
+  "product": {
+    "reviews_label": "({{count}} reviews)",
+    "loading": "Loading...",
+    "not_found": "Product not found"
+  },
+  "add_to_cart": "Add to Cart",
+  "out_of_stock": "Out of stock",
+  "in_stock": "In stock",
+  "fast_delivery": "Fast delivery",
+  "back_to_shop": "Back to shop",
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have a question or comment? We’re here to help.",
+    "coordinates": "Our Contact Details",
+    "follow_us": "Follow us",
+    "info": {
+      "email_label": "Email Us",
+      "email_sub": "Response within 24 hours",
+      "phone_label": "Call Us",
+      "phone_sub": ""
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "name": "Full Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "message_placeholder": "Your message...",
+      "sending": "Sending...",
+      "send_message": "Send Message"
+    }
+  },
+  "chat": {
+    "title": "Saria Assistant",
+    "greeting": "Hello! I'm Saria's Assistant. How can I help you discover your perfect look today?",
+    "placeholder": "Ask about products, shipping...",
+    "error": "I'm having trouble connecting right now. Please try again later."
+  },
+  "about": {
+    "badge1_title": "Premium Selection",
+    "badge1_desc": "Only the best brands and products.",
+    "badge2_title": "With Love",
+    "badge2_desc": "Each product is chosen with care.",
+    "values_title": "Our Core Values",
+    "values_subtitle": "What drives us every day.",
+    "cta_title": "Join the World of Saria Beauty",
+    "cta_desc": "Discover the perfect blend of quality and elegance. Explore our collection and find your new favorites today.",
+    "cta_button": "Explore the Collection",
+    "title": "About Saria Beauty",
+    "subtitle": "Redefining elegance and self-care through a curated collection of premium beauty products.",
+    "mission_title": "Our Mission",
+    "mission_content": "At Saria Beauty, we believe that beauty is more than just skin deep. It's about confidence, elegance, and taking a moment for yourself in a busy world. Our mission is to deliver a luxurious shopping experience with trusted items and seamless service.",
+    "section_passion_title": "Passion for Beauty",
+    "section_passion_content": "We believe beauty is an art form and a way to express your unique self.",
+    "section_quality_title": "Quality First",
+    "section_quality_content": "Every product is carefully selected and tested to meet our high standards.",
+    "section_trust_title": "Trusted Service",
+    "section_trust_content": "Your satisfaction and trust are at the heart of everything we do."
+  },
+  "home": {
+    "quality_title": "Quality Guarantee",
+    "quality_desc": "We select only trusted, premium products that meet our standards.",
+    "delivery_title": "Fast Delivery",
+    "delivery_desc": "Reliable shipping so your favorites arrive quickly and safely.",
+    "elegance_title": "Timeless Elegance",
+    "elegance_desc": "A curated collection crafted to elevate your daily routine.",
+    "featured_title": "Featured Products",
+    "view_shop": "View Shop",
+    "categories_title": "Shop by Category",
+    "best_sellers_title": "Best Sellers Collection",
+    "top_rated": "Top Rated"
+  },
+  "best_sellers": "Best Sellers",
+  "view_all_products": "View All Products",
+  "wishlist": {
+    "title": "My Wishlist",
+    "items_count": "Items saved for later",
+    "fetch_error": "Failed to load wishlist",
+    "removed_success": "Product removed from wishlist",
+    "remove_error": "Failed to remove from wishlist",
+    "empty_title": "Your wishlist is empty",
+    "empty_message": "Save items you love here and they'll be waiting for you.",
+    "go_shopping": "Go Shopping",
+    "added_success": "Product added to wishlist",
+    "add_error": "Failed to add to wishlist",
+    "save": "Save to Wishlist",
+    "saved": "Saved in Wishlist"
+  },
+  "sort_by": "Sort by",
+  "newsletter": {
+    "title": "Stay Informed",
+    "desc": "Subscribe to our newsletter for exclusive offers and updates.",
+    "email_required": "Please enter your email",
+    "success": "Subscribed successfully",
+    "error": "Subscription failed",
+    "email_placeholder": "Your email",
+    "subscribe": "Subscribe"
+  },
+  "search": {
+    "placeholder": "Search for products...",
+    "loading": "Loading...",
+    "no_results": "No products found for \"{{query}}\""
+  },
+  "legal": {
+    "privacy_title": "Privacy Policy",
+    "terms_title": "Terms & Conditions",
+    "last_updated": "Last updated",
+    "privacy": {
+      "section1_title": "Data Collection",
+      "section1_content": "We collect information you provide directly to us, such as when you create an account, make a purchase, or contact our support team.",
+      "section2_title": "Data Security",
+      "section2_content": "We implement a variety of security measures to maintain the safety of your personal information when you place an order or enter, submit, or access your personal information.",
+      "section3_title": "Your Rights",
+      "section3_content": "You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights."
+    },
+    "terms": {
+      "section1_title": "Acceptance of Terms",
+      "section1_content": "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.",
+      "section2_title": "User Account",
+      "section2_content": "You are responsible for maintaining the confidentiality of your account and password and for restricting access to your computer.",
+      "section3_title": "Product Information",
+      "section3_content": "We attempt to be as accurate as possible. However, we do not warrant that product descriptions or other content is accurate, complete, reliable, current, or error-free."
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about Saria Beauty experience.",
+    "q1": "How long does shipping take?",
+    "a1": "Standard shipping usually takes 3-5 business days within Tunisia.",
+    "q2": "What is your return policy?",
+    "a2": "We accept returns within 14 days of delivery for unopened and unused products.",
+    "q3": "Do you ship internationally?",
+    "a3": "Currently, we only ship within Tunisia, but we are working on expanding our reach soon!",
+    "q4": "Are your products cruelty-free?",
+    "a4": "Yes, we prioritize brands that are cruelty-free and environmentally conscious.",
+    "q5": "How can I track my order?",
+    "a5": "Once your order is shipped, you will receive an email with a tracking number.",
+    "more_questions": "Still have questions?",
+    "contact_us_text": "Our support team is here to help you with anything you need.",
+    "contact_us_btn": "Contact Support"
+  },
+  "order": {
+    "loading": "Loading order...",
+    "not_found_title": "Order Not Found",
+    "go_home": "Go to Homepage",
+    "title": "Order {{id}}",
+    "shipping_title": "Shipping",
+    "name_label": "Name",
+    "email_label": "Email",
+    "address_label": "Address",
+    "delivered_on": "Delivered on {{date}}",
+    "not_delivered": "Not Delivered",
+    "payment_title": "Payment Method",
+    "method_label": "Method",
+    "paid_on": "Paid on {{date}}",
+    "not_paid": "Not Paid",
+    "items_title": "Order Items",
+    "summary_title": "Order Summary",
+    "summary_items": "Items",
+    "summary_shipping": "Shipping",
+    "summary_tax": "Tax",
+    "summary_total": "Order Total",
+    "proceed_payment": "Proceed to Payment",
+    "ticket_title": "Digital Ticket",
+    "ticket_scan_hint": "Scan to access delivery details or download to keep it.",
+    "ticket_download": "Download Ticket",
+    "qr_download_error": "Error while downloading",
+    "qr_download_success": "QR Code downloaded!"
+  },
+  "reviews": {
+    "login_required_title": "Log in to leave a review",
+    "login_required_desc": "You must be logged in to share your experience with our products. It’s quick and easy!",
+    "login_cta": "Log in or create an account",
+    "page_title": "Your Opinion Matters",
+    "page_subtitle": "Share your experience with our products to help our community.",
+    "rating_label": "Your rating",
+    "comment_label": "Your comment",
+    "comment_placeholder": "What do you think of {{name}}?",
+    "submit": "Submit Review",
+    "error_loading": "Error loading products",
+    "validation_required": "Please provide a rating and a comment",
+    "added_success": "Review added",
+    "add_failed": "Failed to add review"
+  },
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "send": "Send",
+    "unknown": "Unknown"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "orders": "Orders",
+      "users": "Users",
+      "reviews": "Reviews",
+      "messages": "Messages",
+      "about": "About Page",
+      "loggedin": "Logged in as"
+    },
+    "header": {
+      "title": "Saria Admin",
+      "subtitle": "Manage your beauty store assets"
+    },
+    "table": {
+      "product": "Product",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "actions": "Actions",
+      "date": "Date"
+    },
+    "products": {
+      "add_btn": "Add Product",
+      "edit_title": "Edit Product",
+      "add_title": "Add New Product",
+      "delete_success": "Product deleted",
+      "delete_error": "Delete failed",
+      "update_success": "Product updated successfully",
+      "create_success": "Product created successfully",
+      "save_error": "Save product failed",
+      "table": {
+        "product": "Product",
+        "category": "Category",
+        "price": "Price",
+        "stock": "Stock"
+      },
+      "form": {
+        "name_label": "Product Name",
+        "name_placeholder": "Enter name",
+        "category_label": "Category",
+        "category_select": "Select",
+        "category_new_placeholder": "New",
+        "price_label": "Price (AED)",
+        "stock_label": "Stock Quantity",
+        "description_label": "Description",
+        "translations_title": "Translations (Optional)",
+        "name_fr_label": "French Name",
+        "name_fr_placeholder": "Nom en français",
+        "desc_fr_label": "French Description",
+        "desc_fr_placeholder": "Description en français",
+        "name_ar_label": "Arabic Name",
+        "name_ar_placeholder": "الاسم بالعربية",
+        "desc_ar_label": "Arabic Description",
+        "desc_ar_placeholder": "الوصف بالعربية",
+        "image_label": "Product Image",
+        "image_upload_text": "Click to upload or enter URL",
+        "image_url_placeholder": "Or paste Image URL",
+        "update_btn": "Update Product",
+        "create_btn": "Create Product",
+        "cancel": "Cancel"
+      },
+      "delete_confirm": {
+        "title": "Delete product?",
+        "text": "This action cannot be undone."
+      }
+    },
+    "orders": {
+      "status_update_success": "Order status updated",
+      "status_update_error": "Update order status failed",
+      "mark_unpaid": "Mark as Unpaid",
+      "mark_paid": "Mark as Paid",
+      "mark_undelivered": "Mark as Undelivered",
+      "mark_delivered": "Mark as Delivered",
+      "order": "Order",
+      "customer_label": "Customer",
+      "customer": "Customer",
+      "guest": "Guest",
+      "no_email": "No email",
+      "items": "items",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "status": {
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "delivered": "Delivered",
+        "processing": "Processing"
+      },
+      "table": {
+        "order": "Order",
+        "customer": "Customer",
+        "shipping": "Shipping",
+        "payment": "Payment"
+      }
+    },
+    "users": {
+      "role": {
+        "customer": "Customer",
+        "admin": "Administrator"
+      },
+      "table": {
+        "customer": "Customer",
+        "role": "Role",
+        "joined": "Joined",
+        "remove_admin": "Remove Admin",
+        "make_admin": "Make Admin",
+        "actions": "Actions"
+      },
+      "remove_admin": "Remove Admin",
+      "make_admin": "Make Admin",
+      "promoted": "User updated: Promoted to Admin",
+      "demoted": "User updated: Demoted to User",
+      "toggle_error": "Toggle admin failed",
+      "delete_success": "User deleted",
+      "delete_error": "Failed to delete user",
+      "delete_confirm": {
+        "title": "Delete User?",
+        "text": "This action cannot be undone."
+      }
+    },
+    "messages": {
+      "table": {
+        "sender": "Sender",
+        "subject": "Subject",
+        "message": "Message",
+        "status": "Status",
+        "date": "Date"
+      },
+      "reply_btn": "Reply",
+      "reply_success": "Reply sent",
+      "reply_error": "Reply failed",
+      "status": {
+        "new": "New",
+        "replied": "Replied"
+      },
+      "reply_modal": {
+        "title": "Reply to message",
+        "from": "From {{name}} · {{email}}",
+        "subject_label": "Subject",
+        "message_label": "Message",
+        "response_label": "Your response",
+        "response_placeholder": "Type your response here...",
+        "cancel": "Cancel",
+        "send": "Send",
+        "reply_success": "Reply sent",
+        "reply_error": "Reply failed"
+      }
+    },
+    "reviews": {
+      "table": {
+        "reviewer": "Reviewer",
+        "rating": "Rating",
+        "comment": "Comment"
+      },
+      "delete_success": "Review deleted",
+      "delete_error": "Failed to delete review",
+      "delete_confirm": {
+        "title": "Delete Review?",
+        "text": "This action cannot be undone."
+      }
+    },
+    "about": {
+      "edit_title": "Edit About Page Content",
+      "save_btn": "Save All Changes",
+      "page_title_label": "Page Title",
+      "hero_subtitle_label": "Hero Subtitle",
+      "mission_title_label": "Mission Title",
+      "mission_content_label": "Mission Content",
+      "mission_image_label": "Mission Image URL",
+      "sections_label": "Core Values / Sections",
+      "add_section_btn": "Add Section",
+      "section_title_placeholder": "Section Title",
+      "section_content_placeholder": "Section Content",
+      "update_success": "About page updated successfully",
+      "update_error": "Failed to update About page",
+      "add_section": "Add Section"
+    },
+    "stats": {
+      "total_sales": "Total Sales",
+      "total_orders": "Total Orders",
+      "products": "Products",
+      "customers": "Customers",
+      "sales_performance": "Sales Performance"
+    },
+    "toast": {
+      "new_order": "New Order: ${{amount}}",
+      "new_review": "New Review on {{productName}}",
+      "new_message": "New Message from {{name}}",
+      "message_replied": "Message replied to {{name}}",
+      "page_updated": "{{page}} page updated"
+    }
+  },
+  "cart": {
+    "empty": {
+      "title": "Your cart is empty",
+      "message": "Looks like you haven't added any items yet. Explore our collections!",
+      "action": "Start Shopping"
+    },
+    "title": "Your Cart",
+    "subtitle": "Review your items before checking out.",
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free": "Free",
+      "total": "Total"
+    },
+    "checkout": "Proceed to Checkout",
+    "delete": "Remove",
+    "confirm": {
+      "title": "Remove item?",
+      "message": "Are you sure you want to remove this item from your cart?"
+    }
+  },
+  "categories": {
+    "beauty": "Beauty",
+    "skincare": "Skincare",
+    "fragrance": "Fragrance"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "steps": {
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "place_order": "Place Order"
+    },
+    "shipping": {
+      "title": "Shipping Address",
+      "address_label": "Address",
+      "city_label": "City",
+      "postal_code_label": "Postal Code",
+      "country_label": "Country",
+      "continue_btn": "Continue to Payment"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "paypal": "PayPal",
+      "stripe": "Credit Card (Stripe)",
+      "back_btn": "Back to Shipping",
+      "continue_btn": "Continue to Place Order",
+      "element_help": "Supported cards and payment methods, including Apple Pay where available.",
+      "processing": "Processing...",
+      "pay_now": "Pay now"
+    },
+    "review": {
+      "title": "Review Your Order",
+      "title_card": "Enter your card details",
+      "shipping_info": "Shipping",
+      "payment_method": "Payment Method",
+      "order_items": "Order Items",
+      "back_btn": "Back to Payment",
+      "place_order_btn": "Place Order"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "items": "Items",
+      "total": "Order Total"
+    },
+    "errors": {
+      "payment_init_failed": "Impossible to initialize payment",
+      "order_failed": "Order placement failed!",
+      "payment_unexpected": "An unexpected error occurred.",
+      "paypal_not_configured": "PayPal is not configured."
+    },
+    "success": {
+      "order_placed": "Order placed successfully!"
+    }
+  }
+}

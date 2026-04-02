@@ -1,0 +1,569 @@
+{
+  "welcome": "Bienvenue chez Saria Beauty",
+  "tagline": "Élégant. Féminin. Luxueux.",
+  "shop_now": "Acheter Maintenant",
+  "featured_products": "Produits Vedettes",
+  "nav": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "reviews": "Avis",
+    "about": "À Propos",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "auth": {
+    "sign_in_to_your_account": "Connectez-vous à votre compte",
+    "email_address": "Adresse e-mail",
+    "password": "Mot de passe",
+    "sign_in": "Se connecter",
+    "dont_have_an_account": "Vous n'avez pas de compte ?",
+    "register_here": "Inscrivez-vous ici",
+    "create_account": "Créer un compte",
+    "full_name": "Nom complet",
+    "register": "S'inscrire",
+    "already_have_an_account": "Vous avez déjà un compte ?",
+    "sign_in_here": "Connectez-vous ici",
+    "welcome_back": "Bon retour, {{name}} !",
+    "login_failed": "Échec de la connexion",
+    "account_created": "Compte créé avec succès !",
+    "registration_failed": "Échec de l'inscription",
+    "logged_out": "Déconnexion réussie",
+    "or_continue_with": "Ou continuer avec",
+    "google_login_failed": "Échec de la connexion Google"
+  },
+  "profile": {
+    "title": "Profil Utilisateur",
+    "save_changes": "Enregistrer les modifications",
+    "edit_profile": "Modifier le profil",
+    "name": "Nom",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "password_placeholder": "Laisser vide pour conserver le mot de passe actuel",
+    "confirm_password_placeholder": "Confirmer le nouveau mot de passe",
+    "saving": "Enregistrement...",
+    "update_btn": "Mettre à jour le profil",
+    "login_required": "Veuillez vous connecter pour voir votre profil.",
+    "passwords_mismatch": "Les mots de passe ne correspondent pas",
+    "update_success": "Profil mis à jour avec succès",
+    "update_error": "Échec de la mise à jour du profil",
+    "my_orders": "Mes Commandes",
+    "loading_orders": "Chargement des commandes...",
+    "no_orders": "Vous n'avez pas encore passé de commande.",
+    "order": "Commande",
+    "view_details": "Voir les détails",
+    "date": "Date",
+    "total": "Total",
+    "paid_on": "Payé le {{date}}",
+    "not_paid": "Non payé",
+    "delivered_on": "Livré le {{date}}",
+    "not_delivered": "Non livré",
+    "items": "Articles",
+    "each": "chacun",
+    "name_placeholder": "Entrez le nom",
+    "email_placeholder": "Entrez l'email",
+    "enter_password_placeholder": "Entrez le mot de passe"
+  },
+  "hero": {
+    "premium_badge": "Collection Beauté Premium",
+    "title": "Découvrez votre beauté naturelle",
+    "subtitle": "Cosmétiques premium pour la femme moderne"
+  },
+  "confirm": {
+    "logout_title": "Confirmer la déconnexion",
+    "logout_message": "Êtes-vous sûr de vouloir vous déconnecter ?"
+  },
+  "not_found": {
+    "title": "Page non trouvée",
+    "message": "Désolé, la page demandée n’existe pas.",
+    "back_home": "Retour à l’accueil"
+  },
+  "footer": {
+    "about": "À Propos",
+    "contact": "Contact",
+    "rights": "Tous droits réservés.",
+    "paragraph": "L'élégance et le soin redéfinis à travers une collection de produits de beauté premium.",
+    "navigation": "Navigation",
+    "shop": "Boutique",
+    "reviews": "Avis",
+    "support": "Support",
+    "my_account": "Mon Compte",
+    "cart": "Panier",
+    "faq": "FAQ",
+    "newsletter_title": "Restez Informé",
+    "newsletter_desc": "Abonnez-vous à notre newsletter pour des offres exclusives.",
+    "email_placeholder": "Votre email",
+    "privacy": "Confidentialité",
+    "terms": "Termes"
+  }
+  ,
+  "shop": {
+    "title": "Notre Boutique",
+    "subtitle": "Découvrez notre collection de produits de beauté premium, conçus pour sublimer votre style unique.",
+    "search_placeholder": "Rechercher des produits...",
+    "no_products_title": "Aucun produit trouvé",
+    "no_products_desc": "Essayez d'ajuster votre recherche ou vos filtres pour trouver ce que vous cherchez.",
+    "clear_filters": "Effacer tous les filtres",
+    "sort": {
+      "newest": "Plus récents",
+      "price_low_to_high": "Prix : Croissant",
+      "price_high_to_low": "Prix : Décroissant",
+      "highest_rated": "Mieux notés"
+    }
+  },
+  "product": {
+    "reviews_label": "({{count}} avis)",
+    "loading": "Chargement...",
+    "not_found": "Produit non trouvé"
+  },
+  "add_to_cart": "Ajouter au panier",
+  "out_of_stock": "Rupture de stock",
+  "in_stock": "En stock",
+  "fast_delivery": "Livraison rapide",
+  "back_to_shop": "Retour à la boutique",
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Une question ou un commentaire ? Nous sommes à votre écoute.",
+    "coordinates": "Nos Coordonnées",
+    "follow_us": "Suivez-nous",
+    "info": {
+      "email_label": "Envoyez un email",
+      "email_sub": "Réponse sous 24 heures",
+      "phone_label": "Appelez-nous",
+      "phone_sub": ""
+    },
+    "form": {
+      "title": "Envoyez-nous un Message",
+      "name": "Nom Complet",
+      "email": "Adresse Email",
+      "subject": "Sujet",
+      "message": "Message",
+      "message_placeholder": "Votre message...",
+      "sending": "Envoi en cours...",
+      "send_message": "Envoyer le Message"
+    }
+  },
+  "chat": {
+    "title": "Assistant Saria",
+    "greeting": "Bonjour ! Je suis l’assistant de Saria. Comment puis-je vous aider à découvrir votre look parfait aujourd’hui ?",
+    "placeholder": "Demandez sur les produits, la livraison...",
+    "error": "Un problème de connexion est survenu. Veuillez réessayer plus tard."
+  },
+  "about": {
+    "badge1_title": "Sélection Premium",
+    "badge1_desc": "Uniquement les meilleures marques et produits.",
+    "badge2_title": "Avec Amour",
+    "badge2_desc": "Chaque produit est choisi avec soin.",
+    "values_title": "Nos Valeurs Fondamentales",
+    "values_subtitle": "Ce qui nous motive chaque jour.",
+    "cta_title": "Rejoignez le Monde de Saria Beauty",
+    "cta_desc": "Découvrez le mélange parfait de qualité et d'élégance. Explorez notre collection et trouvez vos nouveaux favoris dès aujourd'hui.",
+    "cta_button": "Explorer la Collection",
+    "title": "À propos de Saria Beauty",
+    "subtitle": "Redéfinir l'élégance et le soin de soi à travers une collection soignée de produits de beauté premium.",
+    "mission_title": "Notre Mission",
+    "mission_content": "Chez Saria Beauty, nous croyons que la beauté est bien plus que superficielle. C'est une question de confiance, d'élégance et de prendre un moment pour soi dans un monde trépidant. Notre mission est d'offrir une expérience de shopping luxueuse avec des articles de confiance et un service impeccable.",
+    "section_passion_title": "Passion pour la Beauté",
+    "section_passion_content": "Nous croyons que la beauté est une forme d'art et un moyen d'exprimer votre unicité.",
+    "section_quality_title": "La Qualité d'Abord",
+    "section_quality_content": "Chaque produit est soigneusement sélectionné et testé pour répondre à nos normes élevées.",
+    "section_trust_title": "Service de Confiance",
+    "section_trust_content": "Votre satisfaction et votre confiance sont au cœur de tout ce que nous faisons."
+  },
+  "home": {
+    "quality_title": "Garantie de qualité",
+    "quality_desc": "Nous sélectionnons uniquement des produits premium de confiance.",
+    "delivery_title": "Livraison rapide",
+    "delivery_desc": "Expédition fiable pour recevoir vos favoris rapidement et en toute sécurité.",
+    "elegance_title": "Élégance intemporelle",
+    "elegance_desc": "Une collection soignée pour sublimer votre routine.",
+    "featured_title": "Produits Vedettes",
+    "view_shop": "Voir la boutique",
+    "categories_title": "Acheter par catégorie",
+    "best_sellers_title": "Collection des Meilleures Ventes",
+    "top_rated": "Mieux notés"
+  },
+  "best_sellers": "Meilleures Ventes",
+  "view_all_products": "Voir tous les produits",
+  "wishlist": {
+    "title": "Ma Liste de Souhaits",
+    "items_count": "Articles enregistrés pour plus tard",
+    "fetch_error": "Échec du chargement de la liste",
+    "removed_success": "Produit retiré de la liste",
+    "remove_error": "Échec du retrait de la liste",
+    "empty_title": "Votre liste est vide",
+    "empty_message": "Enregistrez les articles que vous aimez ici.",
+    "go_shopping": "Aller à la Boutique",
+    "added_success": "Produit ajouté à la liste",
+    "add_error": "Échec de l'ajout à la liste",
+    "save": "Enregistrer dans la liste",
+    "saved": "Enregistré dans la liste"
+  },
+  "sort_by": "Trier par",
+  "newsletter": {
+    "title": "Restez Informé",
+    "desc": "Abonnez-vous à notre newsletter pour des offres et des mises à jour exclusives.",
+    "email_required": "Veuillez entrer votre email",
+    "success": "Inscription réussie",
+    "error": "Échec de l’inscription",
+    "email_placeholder": "Votre email",
+    "subscribe": "S’abonner"
+  },
+  "category": {
+    "all": "Tous",
+    "beauty": "Beauté",
+    "skincare": "Soins de la peau",
+    "bodycare": "Soins du corps",
+    "haircare": "Soins capillaires",
+    "fragrance": "Parfum",
+    "tools": "Outils",
+    "collection": "Collection"
+  },
+  "search": {
+    "placeholder": "Rechercher des produits...",
+    "loading": "Chargement...",
+    "no_results": "Aucun produit trouvé pour \"{{query}}\""
+  },
+  "legal": {
+    "privacy_title": "Politique de Confidentialité",
+    "terms_title": "Termes et Conditions",
+    "last_updated": "Dernière mise à jour",
+    "privacy": {
+      "section1_title": "Collecte de Données",
+      "section1_content": "Nous recueillons les informations que vous nous fournissez directement, par exemple lorsque vous créez un compte, effectuez un achat ou contactez notre équipe d'assistance.",
+      "section2_title": "Sécurité des Données",
+      "section2_content": "Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles lorsque vous passez une commande ou accédez à vos informations.",
+      "section3_title": "Vos Droits",
+      "section3_content": "Vous avez le droit d'accéder à vos données personnelles, de les corriger ou de les supprimer. Veuillez nous contacter si vous souhaitez exercer ces droits."
+    },
+    "terms": {
+      "section1_title": "Acceptation des Termes",
+      "section1_content": "En accédant à ce site Web et en l'utilisant, vous acceptez d'être lié par les termes et dispositions de cet accord.",
+      "section2_title": "Compte Utilisateur",
+      "section2_content": "Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe, ainsi que de la restriction de l'accès à votre ordinateur.",
+      "section3_title": "Informations sur les Produits",
+      "section3_content": "Nous essayons d'être aussi précis que possible. Cependant, nous ne garantissons pas que les descriptions de produits ou tout autre contenu sont exacts, complets ou sans erreur."
+    }
+  },
+  "faq": {
+    "title": "Foire Aux Questions",
+    "subtitle": "Tout ce que vous devez savoir sur l'expérience Saria Beauty.",
+    "q1": "Combien de temps prend la livraison ?",
+    "a1": "La livraison standard prend généralement 3 à 5 jours ouvrables en Tunisie.",
+    "q2": "Quelle est votre politique de retour ?",
+    "a2": "Nous acceptons les retours dans les 14 jours suivant la livraison pour les produits non ouverts et non utilisés.",
+    "q3": "Expédiez-vous à l'international ?",
+    "a3": "Actuellement, nous ne livrons qu'en Tunisie, mais nous travaillons à étendre notre portée bientôt !",
+    "q4": "Vos produits sont-ils sans cruauté ?",
+    "a4": "Oui, nous privilégions les marques sans cruauté et respectueuses de l'environnement.",
+    "q5": "Comment puis-je suivre ma commande ?",
+    "a5": "Une fois votre commande expédiée, vous recevrez un e-mail avec un numéro de suivi.",
+    "more_questions": "Vous avez encore des questions ?",
+    "contact_us_text": "Notre équipe d'assistance est là pour vous aider.",
+    "contact_us_btn": "Contacter le Support"
+  },
+  "order": {
+    "loading": "Chargement de la commande...",
+    "not_found_title": "Commande introuvable",
+    "go_home": "Aller à l’accueil",
+    "title": "Commande {{id}}",
+    "shipping_title": "Livraison",
+    "name_label": "Nom",
+    "email_label": "Email",
+    "address_label": "Adresse",
+    "delivered_on": "Livré le {{date}}",
+    "not_delivered": "Non livré",
+    "payment_title": "Méthode de paiement",
+    "method_label": "Méthode",
+    "paid_on": "Payé le {{date}}",
+    "not_paid": "Non payé",
+    "items_title": "Articles de la commande",
+    "summary_title": "Récapitulatif de la commande",
+    "summary_items": "Articles",
+    "summary_shipping": "Livraison",
+    "summary_tax": "Taxe",
+    "summary_total": "Total de la commande",
+    "proceed_payment": "Procéder au paiement",
+    "ticket_title": "Ticket Digital",
+    "ticket_scan_hint": "Scannez pour accéder aux détails de livraison ou téléchargez-le pour le conserver.",
+    "ticket_download": "Télécharger le ticket",
+    "qr_download_error": "Erreur lors du téléchargement",
+    "qr_download_success": "QR Code téléchargé !"
+  },
+  "reviews": {
+    "login_required_title": "Connectez-vous pour laisser un avis",
+    "login_required_desc": "Vous devez être connecté pour partager votre expérience avec nos produits. C’est rapide et facile !",
+    "login_cta": "Se connecter ou créer un compte",
+    "page_title": "Votre Avis Compte",
+    "page_subtitle": "Partagez votre expérience avec nos produits pour aider notre communauté.",
+    "rating_label": "Votre note",
+    "comment_label": "Votre commentaire",
+    "comment_placeholder": "Que pensez-vous de {{name}} ?",
+    "submit": "Envoyer l’avis",
+    "error_loading": "Erreur de chargement des produits",
+    "validation_required": "Veuillez fournir une note et un commentaire",
+    "added_success": "Avis ajouté",
+    "add_failed": "Ajout de l’avis échoué"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "deleting": "Suppression...",
+    "send": "Envoyer",
+    "unknown": "Inconnu"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "products": "Produits",
+      "orders": "Commandes",
+      "users": "Utilisateurs",
+      "reviews": "Avis",
+      "messages": "Messages",
+      "about": "Page À propos",
+      "loggedin": "Connecté en tant que"
+    },
+    "header": {
+      "title": "Admin Saria",
+      "subtitle": "Gérez les actifs de votre boutique de beauté"
+    },
+    "table": {
+      "product": "Produit",
+      "category": "Catégorie",
+      "price": "Prix",
+      "stock": "Stock",
+      "actions": "Actions",
+      "date": "Date"
+    },
+    "products": {
+      "add_btn": "Ajouter un produit",
+      "edit_title": "Modifier le produit",
+      "add_title": "Ajouter un nouveau produit",
+      "delete_success": "Produit supprimé",
+      "delete_error": "Échec de la suppression",
+      "update_success": "Produit mis à jour avec succès",
+      "create_success": "Produit créé avec succès",
+      "save_error": "Échec de l'enregistrement du produit",
+      "table": {
+        "product": "Produit",
+        "category": "Catégorie",
+        "price": "Prix",
+        "stock": "Stock"
+      },
+      "form": {
+        "name_label": "Nom du produit",
+        "name_placeholder": "Entrez le nom",
+        "category_label": "Catégorie",
+        "category_select": "Sélectionner",
+        "category_new_placeholder": "Nouveau",
+        "price_label": "Prix (AED)",
+        "stock_label": "Quantité en stock",
+        "description_label": "Description",
+        "translations_title": "Traductions (Optionnel)",
+        "name_fr_label": "Nom en français",
+        "name_fr_placeholder": "Nom en français",
+        "desc_fr_label": "Description en français",
+        "desc_fr_placeholder": "Description en français",
+        "name_ar_label": "Nom en arabe",
+        "name_ar_placeholder": "الاسم بالعربية",
+        "desc_ar_label": "Description en arabe",
+        "desc_ar_placeholder": "الوصف بالعربية",
+        "image_label": "Image du produit",
+        "image_upload_text": "Cliquez pour télécharger ou entrez une URL",
+        "image_url_placeholder": "Ou collez l'URL de l'image",
+        "update_btn": "Mettre à jour le produit",
+        "create_btn": "Créer le produit"
+      },
+      "delete_confirm": {
+        "title": "Supprimer le produit ?",
+        "text": "Cette action est irréversible."
+      }
+    },
+    "orders": {
+      "order": "Commande",
+      "status_update_success": "Statut de la commande mis à jour",
+      "status_update_error": "Échec de la mise à jour du statut de la commande",
+      "mark_unpaid": "Marquer comme non payé",
+      "mark_paid": "Marquer comme payé",
+      "mark_undelivered": "Marquer comme non livré",
+      "mark_delivered": "Marquer comme livré",
+      "customer": "Client",
+      "customer_label": "Client",
+      "guest": "Invité",
+      "no_email": "Pas d'email",
+      "items": "articles",
+      "shipping": "Livraison",
+      "payment": "Paiement",
+      "status": {
+        "paid": "Payé",
+        "unpaid": "Non payé",
+        "delivered": "Livré",
+        "processing": "En traitement"
+      }
+    },
+    "users": {
+      "role": {
+        "customer": "Client",
+        "admin": "Administrateur"
+      },
+      "table": {
+        "customer": "Client",
+        "role": "Rôle",
+        "joined": "Rejoint le",
+        "remove_admin": "Retirer Admin",
+        "make_admin": "Nommer Admin",
+        "actions": "Actions"
+      },
+      "remove_admin": "Retirer Admin",
+      "make_admin": "Nommer Admin",
+      "promoted": "Utilisateur mis à jour : Promu Admin",
+      "demoted": "Utilisateur mis à jour : Rétrogradé Utilisateur",
+      "toggle_error": "Échec du changement de rôle",
+      "delete_success": "Utilisateur supprimé",
+      "delete_error": "Échec de la suppression",
+      "delete_confirm": {
+        "title": "Supprimer l'utilisateur ?",
+        "text": "Cette action est irréversible."
+      }
+    },
+    "messages": {
+      "table": {
+        "sender": "Expéditeur",
+        "subject": "Sujet",
+        "message": "Message",
+        "status": "Statut",
+        "date": "Date"
+      },
+      "reply_btn": "Répondre",
+      "reply_success": "Réponse envoyée",
+      "reply_error": "Échec de l'envoi de la réponse",
+      "reply_modal": {
+        "title": "Répondre au message",
+        "from": "De {{name}} · {{email}}",
+        "subject_label": "Sujet",
+        "message_label": "Message",
+        "response_label": "Votre réponse",
+        "response_placeholder": "Tapez votre réponse ici..."
+      }
+    },
+    "reviews": {
+      "table": {
+        "reviewer": "Evaluateur",
+        "rating": "Note",
+        "comment": "Commentaire"
+      },
+      "delete_success": "Avis supprimé",
+      "delete_error": "Échec de la suppression",
+      "delete_confirm": {
+        "title": "Supprimer l'avis ?",
+        "text": "Cette action est irréversible."
+      }
+    },
+    "about": {
+      "edit_title": "Modifier le contenu de la page À propos",
+      "save_btn": "Enregistrer tous les changements",
+      "page_title_label": "Titre de la page",
+      "hero_subtitle_label": "Sous-titre Hero",
+      "mission_title_label": "Titre de la mission",
+      "mission_content_label": "Contenu de la mission",
+      "mission_image_label": "URL de l'image de la mission",
+      "sections_label": "Valeurs fondamentales / Sections",
+      "add_section_btn": "Ajouter une section",
+      "section_title_placeholder": "Titre de la section",
+      "section_content_placeholder": "Contenu de la section",
+      "update_success": "Page À propos mise à jour avec succès",
+      "update_error": "Échec de la mise à jour de la page À propos"
+    },
+    "stats": {
+      "total_sales": "Ventes totales",
+      "total_orders": "Commandes totales",
+      "products": "Produits",
+      "customers": "Clients",
+      "sales_performance": "Performance des ventes"
+    },
+    "toast": {
+      "new_order": "Nouvelle commande : {{amount}} $",
+      "new_review": "Nouvel avis sur {{productName}}",
+      "new_message": "Nouveau message de {{name}}",
+      "message_replied": "Réponse envoyée à {{name}}",
+      "page_updated": "Page {{page}} mise à jour"
+    }
+  },
+  "cart": {
+    "empty": {
+      "title": "Votre panier est vide",
+      "message": "On dirait que vous n'avez pas encore ajouté d'articles. Explorez nos collections !",
+      "action": "Commencer le Shopping"
+    },
+    "title": "Votre Panier",
+    "subtitle": "Vérifiez les articles de votre panier avant de passer à la caisse.",
+    "summary": {
+      "title": "Récapitulatif",
+      "subtotal": "Sous-total",
+      "shipping": "Livraison",
+      "free": "Gratuite",
+      "total": "Total"
+    },
+    "checkout": "Passer à la caisse",
+    "delete": "Supprimer",
+    "confirm": {
+      "title": "Supprimer l'article ?",
+      "message": "Êtes-vous sûr de vouloir retirer cet article de votre panier ?"
+    }
+  },
+  "categories": {
+    "beauty": "Beauté",
+    "skincare": "Soin de la peau",
+    "fragrance": "Parfum"
+  },
+  "checkout": {
+    "title": "Caisse",
+    "steps": {
+      "shipping": "Livraison",
+      "payment": "Paiement",
+      "place_order": "Commander"
+    },
+    "shipping": {
+      "title": "Adresse de livraison",
+      "address_label": "Adresse",
+      "city_label": "Ville",
+      "postal_code_label": "Code postal",
+      "country_label": "Pays",
+      "continue_btn": "Continuer vers le paiement"
+    },
+    "payment": {
+      "title": "Moyen de paiement",
+      "paypal": "PayPal",
+      "stripe": "Carte bancaire (Stripe)",
+      "back_btn": "Retour à la livraison",
+      "continue_btn": "Continuer pour commander",
+      "element_help": "Cartes et méthodes de paiement compatibles, y compris Apple Pay lorsque disponible.",
+      "processing": "Traitement en cours...",
+      "pay_now": "Payer maintenant"
+    },
+    "review": {
+      "title": "Vérifiez votre commande",
+      "title_card": "Saisissez les coordonnées de votre carte",
+      "shipping_info": "Livraison",
+      "payment_method": "Moyen de paiement",
+      "order_items": "Articles commandés",
+      "back_btn": "Retour au paiement",
+      "place_order_btn": "Passer la commande"
+    },
+    "summary": {
+      "title": "Récapitulatif",
+      "items": "Articles",
+      "total": "Total de la commande"
+    },
+    "errors": {
+      "payment_init_failed": "Impossible d'initialiser le paiement",
+      "order_failed": "Échec de la commande !",
+      "payment_unexpected": "Une erreur inattendue est survenue.",
+      "paypal_not_configured": "PayPal n'est pas configuré."
+    },
+    "success": {
+      "order_placed": "Commande passée avec succès !"
+    }
+  }
+}

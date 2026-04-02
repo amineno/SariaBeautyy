@@ -1,0 +1,584 @@
+{
+  "welcome": "مرحبًا بكم في ساريا بيوتي",
+  "tagline": "أنيق. أنثوي. فاخر.",
+  "shop_now": "تسوق الآن",
+  "featured_products": "منتجات مميزة",
+  "nav": {
+    "home": "الرئيسية",
+    "shop": "المتجر",
+    "reviews": "المراجعات",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "admin": "الإدارة"
+  },
+  "auth": {
+    "sign_in_to_your_account": "سجل الدخول إلى حسابك",
+    "email_address": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "sign_in": "تسجيل الدخول",
+    "dont_have_an_account": "ليس لديك حساب؟",
+    "register_here": "سجل هنا",
+    "create_account": "إنشاء حساب",
+    "full_name": "الاسم الكامل",
+    "register": "تسجيل",
+    "already_have_an_account": "لديك حساب بالفعل؟",
+    "sign_in_here": "سجل الدخول هنا",
+    "welcome_back": "مرحبًا بعودتك، {{name}}!",
+    "login_failed": "فشل تسجيل الدخول",
+    "account_created": "تم إنشاء الحساب بنجاح!",
+    "registration_failed": "فشل التسجيل",
+    "logged_out": "تم تسجيل الخروج بنجاح",
+    "or_continue_with": "أو المتابعة باستخدام",
+    "google_login_failed": "فشل تسجيل الدخول عبر Google"
+  },
+  "profile": {
+    "title": "ملف المستخدم",
+    "save_changes": "حفظ التغييرات",
+    "edit_profile": "تعديل الملف الشخصي",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "password_placeholder": "اتركه فارغًا للاحتفاظ بكلمة المرور الحالية",
+    "confirm_password_placeholder": "تأكيد كلمة المرور الجديدة",
+    "saving": "جارٍ الحفظ...",
+    "update_btn": "تحديث الملف الشخصي",
+    "login_required": "يرجى تسجيل الدخول لعرض ملفك الشخصي.",
+    "passwords_mismatch": "كلمات المرور غير متطابقة",
+    "update_success": "تم تحديث الملف الشخصي بنجاح",
+    "update_error": "فشل تحديث الملف الشخصي",
+    "my_orders": "طلباتي",
+    "loading_orders": "جارٍ تحميل الطلبات...",
+    "no_orders": "لم تقم بأي طلبات بعد.",
+    "order": "طلب",
+    "view_details": "عرض التفاصيل",
+    "date": "التاريخ",
+    "total": "الإجمالي",
+    "paid_on": "تم الدفع في {{date}}",
+    "not_paid": "لم يتم الدفع",
+    "delivered_on": "تم التسليم في {{date}}",
+    "not_delivered": "غير مسلّم",
+    "items": "العناصر",
+    "each": "لكل",
+    "name_placeholder": "أدخل الاسم",
+    "email_placeholder": "أدخل البريد الإلكتروني",
+    "enter_password_placeholder": "أدخل كلمة المرور"
+  },
+  "hero": {
+    "premium_badge": "مجموعة الجمال الفاخرة",
+    "title": "اكتشفي جمالك الطبيعي",
+    "subtitle": "مستحضرات تجميل فاخرة للمرأة العصرية"
+  },
+  "confirm": {
+    "logout_title": "تأكيد تسجيل الخروج",
+    "logout_message": "هل أنت متأكد أنك تريد تسجيل الخروج؟"
+  },
+  "not_found": {
+    "title": "الصفحة غير موجودة",
+    "message": "عذرًا، الصفحة المطلوبة غير موجودة.",
+    "back_home": "العودة إلى الرئيسية"
+  },
+  "footer": {
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "rights": "جميع الحقوق محفوظة.",
+    "paragraph": "إعادة تعريف الأناقة والعناية الذاتية عبر مجموعة مختارة من منتجات التجميل الفاخرة.",
+    "navigation": "التنقل",
+    "shop": "المتجر",
+    "reviews": "المراجعات",
+    "support": "الدعم",
+    "my_account": "حسابي",
+    "cart": "السلة",
+    "faq": "الأسئلة الشائعة",
+    "newsletter_title": "ابقَ على اطلاع",
+    "newsletter_desc": "اشترك في نشرتنا للحصول على عروض حصرية.",
+    "email_placeholder": "بريدك الإلكتروني",
+    "privacy": "الخصوصية",
+    "terms": "الشروط"
+  },
+  "shop": {
+    "title": "متجرنا",
+    "subtitle": "اكتشف مجموعتنا من منتجات التجميل الفاخرة المصممة لإبراز أسلوبك الفريد.",
+    "search_placeholder": "ابحث عن المنتجات...",
+    "no_products_title": "لا توجد منتجات",
+    "no_products_desc": "حاول تعديل البحث أو المرشحات للوصول لما تريد.",
+    "clear_filters": "مسح كل المرشحات",
+    "sort": {
+      "newest": "الأحدث أولاً",
+      "price_low_to_high": "السعر: من الأقل للأعلى",
+      "price_high_to_low": "السعر: من الأعلى للأقل",
+      "highest_rated": "الأعلى تقييماً"
+    }
+  },
+  "product": {
+    "reviews_label": "({{count}} مراجعة)",
+    "loading": "جارٍ التحميل...",
+    "not_found": "المنتج غير موجود"
+  },
+  "add_to_cart": "أضف إلى السلة",
+  "out_of_stock": "غير متوفر",
+  "in_stock": "متوفر",
+  "fast_delivery": "توصيل سريع",
+  "back_to_shop": "عودة إلى المتجر",
+  "contact": {
+    "title": "اتصل بنا",
+    "subtitle": "هل لديك سؤال أو تعليق؟ نحن هنا لخدمتك.",
+    "coordinates": "معلومات التواصل",
+    "follow_us": "تابعنا",
+    "info": {
+      "email_label": "راسلنا عبر البريد",
+      "email_sub": "رد خلال 24 ساعة",
+      "phone_label": "اتصل بنا",
+      "phone_sub": ""
+    },
+    "form": {
+      "title": "أرسل لنا رسالة",
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "subject": "الموضوع",
+      "message": "الرسالة",
+      "message_placeholder": "اكتب رسالتك...",
+      "sending": "جارٍ الإرسال...",
+      "send_message": "إرسال الرسالة"
+    }
+  },
+  "chat": {
+    "title": "مساعد ساريا",
+    "greeting": "مرحبًا! أنا مساعد ساريا. كيف أساعدك اليوم في اكتشاف إطلالتك المثالية؟",
+    "placeholder": "اسأل عن المنتجات، الشحن...",
+    "error": "توجد مشكلة في الاتصال حاليًا. يرجى المحاولة لاحقًا."
+  },
+  "about": {
+    "badge1_title": "اختيار فاخر",
+    "badge1_desc": "أفضل العلامات التجارية والمنتجات فقط.",
+    "badge2_title": "بكل حب",
+    "badge2_desc": "كل منتج مختار بعناية.",
+    "values_title": "قيمنا الأساسية",
+    "values_subtitle": "ما يدفعنا كل يوم.",
+    "cta_title": "انضم إلى عالم ساريا بيوتي",
+    "cta_desc": "اكتشف المزيج المثالي من الجودة والأناقة. استكشف مجموعتنا وابحث عن مفضلاتك اليوم.",
+    "cta_button": "استكشف المجموعة",
+    "title": "عن ساريا بيوتي",
+    "subtitle": "إعادة تعريف الأناقة والعناية الذاتية من خلال مجموعة مختارة من منتجات التجميل الفاخرة.",
+    "mission_title": "مهمتنا",
+    "mission_content": "في ساريا بيوتي، نؤمن أن الجمال أعمق من مجرد مظهر خارجي. إنه يتعلق بالثقة والأناقة وتخصيص لحظة لنفسك وسط العالم المزدحم. مهمتنا هي تقديم تجربة تسوق فاخرة مع منتجات موثوقة وخدمة سلسة.",
+    "section_passion_title": "شغف بالجمال",
+    "section_passion_content": "نؤمن أن الجمال شكل من أشكال الفن وطريقة للتعبير عن ذاتك الفريدة.",
+    "section_quality_title": "الجودة أولاً",
+    "section_quality_content": "يتم اختيار كل منتج واختباره بعناية لتلبية معاييرنا العالية.",
+    "section_trust_title": "خدمة موثوقة",
+    "section_trust_content": "رضاكم وثقتكم في صميم كل ما نقوم به."
+  },
+  "home": {
+    "quality_title": "ضمان الجودة",
+    "quality_desc": "نختار فقط المنتجات الموثوقة والفاخرة التي تلبي معاييرنا.",
+    "delivery_title": "توصيل سريع",
+    "delivery_desc": "شحن موثوق ليصل اختيارك بسرعة وأمان.",
+    "elegance_title": "أناقة خالدة",
+    "elegance_desc": "مجموعة منسقة لارتقاء روتينك اليومي.",
+    "featured_title": "منتجات مميزة",
+    "view_shop": "عرض المتجر",
+    "categories_title": "تسوق حسب الفئة",
+    "best_sellers_title": "مجموعة الأكثر مبيعاً",
+    "top_rated": "الأعلى تقييماً"
+  },
+  "best_sellers": "الأكثر مبيعاً",
+  "view_all_products": "عرض جميع المنتجات",
+  "wishlist": {
+    "title": "قائمة أمنياتي",
+    "items_count": "عناصر محفوظة لوقت لاحق",
+    "fetch_error": "فشل تحميل قائمة الأمنيات",
+    "removed_success": "تمت إزالة المنتج من القائمة",
+    "remove_error": "فشل إزالة المنتج من القائمة",
+    "empty_title": "قائمة أمنياتك فارغة",
+    "empty_message": "احفظ المنتجات التي تحبها هنا وستكون في انتظارك.",
+    "go_shopping": "اذهب للتسوق",
+    "added_success": "تمت إضافة المنتج للقائمة",
+    "add_error": "فشل إضافة المنتج للقائمة",
+    "save": "حفظ في القائمة",
+    "saved": "محفوظ في القائمة"
+  },
+  "sort_by": "ترتيب حسب",
+  "newsletter": {
+    "title": "ابقَ على اطلاع",
+    "desc": "اشترك في نشرتنا للحصول على عروض وتحديثات حصرية.",
+    "email_required": "يرجى إدخال بريدك الإلكتروني",
+    "success": "تم الاشتراك بنجاح",
+    "error": "فشل الاشتراك",
+    "email_placeholder": "بريدك الإلكتروني",
+    "subscribe": "اشترك"
+  },
+  "category": {
+    "all": "الكل",
+    "beauty": "الجمال",
+    "skincare": "العناية بالبشرة",
+    "bodycare": "العناية بالجسم",
+    "haircare": "العناية بالشعر",
+    "fragrance": "العطور",
+    "tools": "الأدوات",
+    "collection": "مجموعة"
+  },
+  "search": {
+    "placeholder": "ابحث عن المنتجات...",
+    "loading": "جارٍ التحميل...",
+    "no_results": "لا توجد منتجات لـ \"{{query}}\""
+  },
+  "legal": {
+    "privacy_title": "سياسة الخصوصية",
+    "terms_title": "الشروط والأحكام",
+    "last_updated": "آخر تحديث",
+    "privacy": {
+      "section1_title": "جمع البيانات",
+      "section1_content": "نقوم بجمع المعلومات التي تقدمها لنا مباشرة، مثل عند إنشاء حساب، أو إجراء عملية شراء، أو الاتصال بفريق الدعم لدينا.",
+      "section2_title": "أمن البيانات",
+      "section2_content": "نحن نطبق مجموعة متنوعة من إجراءات الأمان للحفاظ على سلامة معلوماتك الشخصية عند تقديم طلب أو الوصول إلى معلوماتك الشخصية.",
+      "section3_title": "حقوقك",
+      "section3_content": "لديك الحق في الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها. يرجى الاتصال بنا إذا كنت ترغب في ممارسة هذه الحقوق."
+    },
+    "terms": {
+      "section1_title": "قبول الشروط",
+      "section1_content": "من خلال الوصول إلى هذا الموقع واستخدامه، فإنك تقبل وتوافق على الالتزام بشروط وأحكام هذه الاتفاقية.",
+      "section2_title": "حساب المستخدم",
+      "section2_content": "أنت مسؤول عن الحفاظ على سرية حسابك وكلمة المرور وعن تقييد الوصول إلى جهاز الكمبيوتر الخاص بك.",
+      "section3_title": "معلومات المنتج",
+      "section3_content": "نحاول أن نكون دقيقين قدر الإمكان. ومع ذلك، نحن لا نضمن أن أوصاف المنتج أو المحتويات الأخرى دقيقة أو كاملة أو خالية من الأخطاء."
+    }
+  },
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "subtitle": "كل ما تحتاج لمعرفته حول تجربة ساريا بيوتي.",
+    "q1": "كم يستغرق الشحن؟",
+    "a1": "يستغرق الشحن القياسي عادةً من 3 إلى 5 أيام عمل داخل تونس.",
+    "q2": "ما هي سياسة الإرجاع الخاصة بكم؟",
+    "a2": "نقبل الإرجاع خلال 14 يومًا من التسليم للمنتجات غير المفتوحة وغير المستخدمة.",
+    "q3": "هل تشحنون دولياً؟",
+    "a3": "حالياً نشحن داخل تونس فقط، لكننا نعمل على توسيع نطاقنا قريباً!",
+    "q4": "هل منتجاتكم صديقة للبيئة؟",
+    "a4": "نعم، نحن نعطي الأولوية للعلامات التجارية التي تحافظ على البيئة ولا تجري تجارب على الحيوانات.",
+    "q5": "كيف يمكنني تتبع طلبي؟",
+    "a5": "بمجرد شحن طلبك، ستتلقى بريداً إلكترونياً يحتوي على رقم التتبع.",
+    "more_questions": "لا تزال لديك أسئلة؟",
+    "contact_us_text": "فريق الدعم لدينا هنا لمساعدتك في أي شيء تحتاجه.",
+    "contact_us_btn": "اتصل بالدعم"
+  },
+  "order": {
+    "loading": "جارٍ تحميل الطلب...",
+    "not_found_title": "الطلب غير موجود",
+    "go_home": "العودة إلى الرئيسية",
+    "title": "طلب {{id}}",
+    "shipping_title": "الشحن",
+    "name_label": "الاسم",
+    "email_label": "البريد الإلكتروني",
+    "address_label": "العنوان",
+    "delivered_on": "تم التسليم في {{date}}",
+    "not_delivered": "غير مسلّم",
+    "payment_title": "طريقة الدفع",
+    "method_label": "الطريقة",
+    "paid_on": "تم الدفع في {{date}}",
+    "not_paid": "لم يتم الدفع",
+    "items_title": "عناصر الطلب",
+    "summary_title": "ملخص الطلب",
+    "summary_items": "العناصر",
+    "summary_shipping": "الشحن",
+    "summary_tax": "الضريبة",
+    "summary_total": "إجمالي الطلب",
+    "proceed_payment": "المتابعة للدفع",
+    "ticket_title": "تذكرة رقمية",
+    "ticket_scan_hint": "امسح للوصول إلى تفاصيل التسليم أو حمّله للاحتفاظ به.",
+    "ticket_download": "تحميل التذكرة",
+    "qr_download_error": "خطأ أثناء التحميل",
+    "qr_download_success": "تم تنزيل رمز الاستجابة السريعة!"
+  },
+  "reviews": {
+    "login_required_title": "سجّل الدخول لترك مراجعة",
+    "login_required_desc": "يجب أن تكون مسجلاً لمشاركة تجربتك مع منتجاتنا. الأمر سريع وسهل!",
+    "login_cta": "سجّل الدخول أو أنشئ حسابًا",
+    "page_title": "رأيك مهم",
+    "page_subtitle": "شارك تجربتك مع منتجاتنا لمساعدة مجتمعنا.",
+    "rating_label": "تقييمك",
+    "comment_label": "تعليقك",
+    "comment_placeholder": "ما رأيك في {{name}}؟",
+    "submit": "إرسال المراجعة",
+    "error_loading": "خطأ في تحميل المنتجات",
+    "validation_required": "يرجى تقديم تقييم وتعليق",
+    "added_success": "تمت إضافة المراجعة",
+    "add_failed": "فشل إضافة المراجعة"
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "deleting": "جارٍ الحذف...",
+    "send": "إرسال",
+    "unknown": "غير معروف"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "لوحة القيادة",
+      "products": "المنتجات",
+      "orders": "الطلبات",
+      "users": "المستخدمين",
+      "reviews": "المراجعات",
+      "messages": "الرسائل",
+      "about": "صفحة من نحن",
+      "loggedin": "مسجل الدخول باسم"
+    },
+    "header": {
+      "title": "إدارة ساريا",
+      "subtitle": "إدارة أصول متجر الجمال الخاص بك"
+    },
+    "table": {
+      "product": "المنتج",
+      "category": "الفئة",
+      "price": "السعر",
+      "stock": "المخزون",
+      "actions": "الإجراءات",
+      "date": "التاريخ"
+    },
+    "products": {
+      "add_btn": "إضافة منتج",
+      "edit_title": "تعديل المنتج",
+      "add_title": "إضافة منتج جديد",
+      "delete_success": "تم حذف المنتج",
+      "delete_error": "فشل الحذف",
+      "update_success": "تم تحديث المنتج بنجاح",
+      "create_success": "تم إنشاء المنتج بنجاح",
+      "save_error": "فشل حفظ المنتج",
+      "table": {
+        "product": "المنتج",
+        "category": "الفئة",
+        "price": "السعر",
+        "stock": "المخزون"
+      },
+      "form": {
+        "name_label": "اسم المنتج",
+        "name_placeholder": "أدخل الاسم",
+        "category_label": "الفئة",
+        "category_select": "اختر",
+        "category_new_placeholder": "جديد",
+        "price_label": "السعر (AED)",
+        "stock_label": "كمية المخزون",
+        "description_label": "الوصف",
+        "translations_title": "الترجمات (اختياري)",
+        "name_fr_label": "الاسم بالفرنسية",
+        "name_fr_placeholder": "Nom en français",
+        "desc_fr_label": "الوصف بالفرنسية",
+        "desc_fr_placeholder": "Description en français",
+        "name_ar_label": "الاسم بالعربية",
+        "name_ar_placeholder": "الاسم بالعربية",
+        "desc_ar_label": "الوصف بالعربية",
+        "desc_ar_placeholder": "الوصف بالعربية",
+        "image_label": "صورة المنتج",
+        "image_upload_text": "انقر للتحميل أو أدخل رابط",
+        "image_url_placeholder": "أو الصق رابط الصورة",
+        "update_btn": "تحديث المنتج",
+        "create_btn": "إنشاء المنتج",
+        "cancel": "إلغاء"
+      },
+      "delete_confirm": {
+        "title": "حذف المنتج؟",
+        "text": "لا يمكن التراجع عن هذا الإجراء."
+      }
+    },
+    "orders": {
+      "status_update_success": "تم تحديث حالة الطلب",
+      "status_update_error": "فشل تحديث حالة الطلب",
+      "mark_unpaid": "وضع علامة كغير مدفوع",
+      "mark_paid": "وضع علامة كمدفوع",
+      "mark_undelivered": "وضع علامة كغير مسلّم",
+      "mark_delivered": "وضع علامة كمسلّم",
+      "order": "طلب",
+      "customer_label": "العميل",
+      "customer": "العميل",
+      "guest": "زائر",
+      "no_email": "لا يوجد بريد إلكتروني",
+      "items": "عناصر",
+      "shipping": "الشحن",
+      "payment": "الدفع",
+      "status": {
+        "paid": "مدفوع",
+        "unpaid": "غير مدفوع",
+        "delivered": "مسلّم",
+        "processing": "قيد المعالجة"
+      },
+      "table": {
+        "order": "الطلب",
+        "customer": "العميل",
+        "shipping": "الشحن",
+        "payment": "الدفع"
+      }
+    },
+    "users": {
+      "role": {
+        "customer": "عميل",
+        "admin": "مدير"
+      },
+      "table": {
+        "customer": "العميل",
+        "role": "الدور",
+        "joined": "تاريخ الانضمام",
+        "actions": "الإجراءات",
+        "remove_admin": "إزالة صلاحيات المدير",
+        "make_admin": "ترقية لمدير"
+      },
+      "remove_admin": "إزالة صلاحيات المدير",
+      "make_admin": "ترقية لمدير",
+      "promoted": "تم تحديث المستخدم: تمت ترقيته لمدير",
+      "demoted": "تم تحديث المستخدم: تمت إعادته لمستخدم",
+      "toggle_error": "فشل تغيير الدور",
+      "delete_success": "تم حذف المستخدم",
+      "delete_error": "فشل حذف المستخدم",
+      "delete_confirm": {
+        "title": "حذف المستخدم؟",
+        "text": "لا يمكن التراجع عن هذا الإجراء."
+      }
+    },
+    "messages": {
+      "table": {
+        "sender": "المرسل",
+        "subject": "الموضوع",
+        "message": "الرسالة",
+        "status": "الحالة",
+        "date": "التاريخ"
+      },
+      "reply_btn": "رد",
+      "reply_success": "تم إرسال الرد",
+      "reply_error": "فشل إرسال الرد",
+      "status": {
+        "new": "جديد",
+        "replied": "تم الرد"
+      },
+      "reply_modal": {
+        "title": "الرد على الرسالة",
+        "from": "من {{name}} · {{email}}",
+        "subject_label": "الموضوع",
+        "message_label": "الرسالة",
+        "response_label": "ردك",
+        "response_placeholder": "اكتب ردك هنا...",
+        "cancel": "إلغاء",
+        "send": "إرسال",
+        "reply_success": "تم إرسال الرد",
+        "reply_error": "فشل إرسال الرد"
+      }
+    },
+    "reviews": {
+      "table": {
+        "reviewer": "المراجع",
+        "rating": "التقييم",
+        "comment": "التعليق"
+      },
+      "delete_success": "تم حذف المراجعة",
+      "delete_error": "فشل حذف المراجعة",
+      "delete_confirm": {
+        "title": "حذف المراجعة؟",
+        "text": "لا يمكن التراجع عن هذا الإجراء."
+      }
+    },
+    "about": {
+      "edit_title": "تعديل محتوى صفحة من نحن",
+      "save_btn": "حفظ جميع التغييرات",
+      "page_title_label": "عنوان الصفحة",
+      "hero_subtitle_label": "عنوان فرعي رئيسي",
+      "mission_title_label": "عنوان المهمة",
+      "mission_content_label": "محتوى المهمة",
+      "mission_image_label": "رابط صورة المهمة",
+      "sections_label": "القيم الأساسية / الأقسام",
+      "add_section_btn": "إضافة قسم",
+      "section_title_placeholder": "عنوان القسم",
+      "section_content_placeholder": "محتوى القسم",
+      "update_success": "تم تحديث صفحة من نحن بنجاح",
+      "update_error": "فشل تحديث صفحة من نحن",
+      "add_section": "إضافة قسم"
+    },
+    "stats": {
+      "total_sales": "إجمالي المبيعات",
+      "total_orders": "إجمالي الطلبات",
+      "products": "المنتجات",
+      "customers": "العملاء",
+      "sales_performance": "أداء المبيعات"
+    },
+    "toast": {
+      "new_order": "طلب جديد: {{amount}}$",
+      "new_review": "مراجعة جديدة على {{productName}}",
+      "new_message": "رسالة جديدة من {{name}}",
+      "message_replied": "تم الرد على رسالة {{name}}",
+      "page_updated": "تم تحديث صفحة {{page}}"
+    }
+  },
+  "cart": {
+    "empty": {
+      "title": "سلة التسوق فارغة",
+      "message": "يبدو أنك لم تضف أي منتجات بعد. تصفح مجموعاتنا!",
+      "action": "ابدأ التسوق"
+    },
+    "title": "سلة التسوق",
+    "subtitle": "راجع العناصر في سلتك قبل الدفع.",
+    "summary": {
+      "title": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "free": "مجاني",
+      "total": "الإجمالي"
+    },
+    "checkout": "إتمام الشراء",
+    "delete": "إزالة",
+    "confirm": {
+      "title": "إزالة المنتج؟",
+      "message": "هل أنت متأكد أنك تريد إزالة هذا المنتج من سلتك؟"
+    }
+  },
+  "categories": {
+    "beauty": "تجميل",
+    "skincare": "عناية بالبشرة",
+    "fragrance": "عطور"
+  },
+  "checkout": {
+    "title": "الدفع",
+    "steps": {
+      "shipping": "الشحن",
+      "payment": "الدفع",
+      "place_order": "إتمام الطلب"
+    },
+    "shipping": {
+      "title": "عنوان الشحن",
+      "address_label": "العنوان",
+      "city_label": "المدينة",
+      "postal_code_label": "الرمز البريدي",
+      "country_label": "البلد",
+      "continue_btn": "متابعة للدفع"
+    },
+    "payment": {
+      "title": "طريقة الدفع",
+      "paypal": "باي بال",
+      "stripe": "بطاقة ائتمان (Stripe)",
+      "back_btn": "العودة للشحن",
+      "continue_btn": "متابعة لإتمام الطلب",
+      "element_help": "بطاقات وطرق دفع مدعومة، بما في ذلك Apple Pay عند توفره.",
+      "processing": "جاري المعالجة...",
+      "pay_now": "ادفع الآن"
+    },
+    "review": {
+      "title": "مراجعة الطلب",
+      "title_card": "إدخال بيانات البطاقة البنكية",
+      "shipping_info": "الشحن",
+      "payment_method": "طريقة الدفع",
+      "order_items": "عناصر الطلب",
+      "back_btn": "العودة للدفع",
+      "place_order_btn": "تأكيد الطلب"
+    },
+    "summary": {
+      "title": "ملخص الطلب",
+      "items": "العناصر",
+      "total": "إجمالي الطلب"
+    },
+    "errors": {
+      "payment_init_failed": "تعذر تهيئة الدفع",
+      "order_failed": "فشل إتمام الطلب!",
+      "payment_unexpected": "حدث خطأ غير متوقع.",
+      "paypal_not_configured": "لم يتم تهيئة PayPal."
+    },
+    "success": {
+      "order_placed": "تم الطلب بنجاح!"
+    }
+  }
+}
