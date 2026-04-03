@@ -52,13 +52,13 @@ const Contact = () => {
     {
       icon: <Mail className="w-6 h-6 text-primary" />,
       label: t('contact.info.email_label'),
-      value: "support@sariabeauty.com",
+      value: "sariabeauty5@gmail.com",
       subValue: t('contact.info.email_sub')
     },
     {
       icon: <Phone className="w-6 h-6 text-primary" />,
       label: t('contact.info.phone_label'),
-      value: "+1 (555) 123-4567",
+      value: "",
       subValue: t('contact.info.phone_sub')
     }
   ];
@@ -156,7 +156,6 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder={t('contact.form.name_placeholder')}
                     className="input w-full bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:bg-white dark:focus:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                   />
                 </div>
@@ -171,7 +170,6 @@ const Contact = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder={t('contact.form.email_placeholder')}
                     className="input w-full bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:bg-white dark:focus:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                   />
                 </div>

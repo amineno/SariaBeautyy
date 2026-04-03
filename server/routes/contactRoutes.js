@@ -3,6 +3,7 @@ const router = express.Router();
 const Message = require('../models/Message');
 const { registerClient, broadcastEvent } = require('../utils/sse');
 const { protect, admin, protectOptional } = require('../middleware/authMiddleware');
+const { sendEmail } = require('../utils/sendEmail');
 
 // @desc    SSE endpoint for real-time contact notifications
 // @route   GET /api/contact/events
@@ -65,6 +66,36 @@ router.put('/:id/reply', protect, admin, async (req, res) => {
     msg.unreadReply = true;
     msg.repliedAt = new Date();
     await msg.save();
+
+    try {
+      const subject = msg.subject ? `Re: ${msg.subject}` : 'Support reply';
+      const html = `
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 640px; margin: 0 auto; border: 1px solid #eee; padding: 24px; border-radius: 12px;">
+          <h2 style="margin: 0 0 12px; color: #d4a373;">Saria Beauty Support</h2>
+          <p style="margin: 0 0 16px;">Hello ${msg.name || ''},</p>
+          <p style="margin: 0 0 16px;">We received your message:</p>
+          <div style="background: #fafafa; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin: 0 0 16px;">
+            <p style="margin: 0 0 8px;"><strong>Subject:</strong> ${msg.subject || ''}</p>
+            <p style="margin: 0; white-space: pre-wrap;">${msg.message || ''}</p>
+          </div>
+          <p style="margin: 0 0 10px;"><strong>Our reply:</strong></p>
+          <div style="background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin: 0 0 20px;">
+            <p style="margin: 0; white-space: pre-wrap;">${reply}</p>
+          </div>
+          <p style="margin: 0; font-size: 12px; color: #777;">If you have any other questions, just reply to this email.</p>
+        </div>
+      `;
+
+      await sendEmail({
+        email: msg.email,
+        subject,
+        message: reply,
+        html,
+      });
+    } catch (e) {
+      console.error('Failed to send support reply email:', e.message || e);
+    }
+
     broadcastEvent({
       channel: 'contact',
       type: 'message_replied',
