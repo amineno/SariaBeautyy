@@ -55,7 +55,7 @@ const Shop = () => {
     return { name, description };
   };
 
-  const categories = ['All', 'Beauty', 'Skincare', 'Bodycare', 'Haircare', 'Tools'];
+  const categories = ['All', 'Beauty', 'Skincare', 'Bodycare', 'Haircare'];
   
   const filtered = products; // Sorting and filtering handled by backend now
 
