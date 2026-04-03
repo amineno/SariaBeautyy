@@ -7,11 +7,6 @@ export const socialMediaConfig = {
     username: '@saria_beauty',
     displayName: 'Instagram'
   },
-  tiktok: {
-    url: 'https://www.tiktok.com/@sariabeauty',
-    username: '@sariabeauty',
-    displayName: 'TikTok'
-  },
   whatsapp: {
     url: 'https://wa.me/212600000000', // Moroccan WhatsApp format
     phoneNumber: '+212600000000', // Moroccan phone format

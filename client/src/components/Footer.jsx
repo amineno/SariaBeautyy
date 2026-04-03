@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Mail, MessageCircle } from 'lucide-react';
-import TikTok from './icons/TikTok';
 import { useTranslation } from 'react-i18next';
 import { getSocialMediaUrl } from '../config/socialLinks';
 import { toast } from 'react-hot-toast';
@@ -23,7 +22,6 @@ const Footer = () => {
             </p>
             <div className="mt-6 flex items-center space-x-4 rtl:space-x-reverse">
               <a href={getSocialMediaUrl('instagram')} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors" onClick={() => handleSocialClick('Instagram')}><Instagram /></a>
-              <a href={getSocialMediaUrl('tiktok')} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors" onClick={() => handleSocialClick('TikTok')}><TikTok /></a>
               <a href={getSocialMediaUrl('whatsapp')} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors" onClick={() => handleSocialClick('WhatsApp')}><MessageCircle /></a>
             </div>
           </div>

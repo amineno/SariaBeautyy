@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, Send, Instagram, MessageCircle } from 'lucide-react';
-import TikTok from '../components/icons/TikTok';
 import { toast } from 'react-hot-toast';
 import api from '../api/axios';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +65,6 @@ const Contact = () => {
 
   const socialLinks = [
     { icon: <Instagram className="w-5 h-5" />, label: "Instagram" },
-    { icon: <TikTok className="w-5 h-5" />, label: "TikTok" },
     { icon: <MessageCircle className="w-5 h-5" />, label: "WhatsApp" }
   ];
 
