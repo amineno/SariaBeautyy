@@ -29,9 +29,7 @@
     "registration_failed": "Échec de l'inscription",
     "logged_out": "Déconnexion réussie",
     "or_continue_with": "Ou continuer avec",
-    "google_login_failed": "Échec de la connexion Google",
-    "continue_with_apple": "Continuer avec Apple",
-    "apple_login_failed": "Échec de la connexion Apple"
+    "google_login_failed": "Échec de la connexion Google"
   },
   "profile": {
     "title": "Profil Utilisateur",

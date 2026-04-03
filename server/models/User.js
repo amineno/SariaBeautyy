@@ -11,7 +11,6 @@ const userSchema = mongoose.Schema({
   },
   password: { type: String },
   googleId: { type: String },
-  appleId: { type: String },
   isAdmin: { type: Boolean, required: true, default: false },
   wishlist: [
     {

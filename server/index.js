@@ -117,7 +117,6 @@ app.get('/', (req, res) => {
 app.get('/api/config/public', (req, res) => {
   res.json({
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
-    appleClientId: process.env.APPLE_CLIENT_ID || '',
   });
 });
 

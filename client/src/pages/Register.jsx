@@ -9,8 +9,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [appleReady, setAppleReady] = useState(false);
-  const { register, googleLogin, appleLogin, user } = useAuth();
+  const { register, googleLogin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -62,55 +61,6 @@ const Register = () => {
     ),
     [handleGoogleSuccess, handleGoogleError, i18n.language]
   );
-
-  const appleClientId = import.meta.env.VITE_APPLE_CLIENT_ID;
-  const appleRedirectUri = import.meta.env.VITE_APPLE_REDIRECT_URI;
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!appleClientId) return;
-    if (!window.AppleID?.auth?.init) return;
-    try {
-      window.AppleID.auth.init({
-        clientId: appleClientId,
-        scope: 'name email',
-        redirectURI: appleRedirectUri || window.location.origin,
-        usePopup: true,
-      });
-      setAppleReady(true);
-    } catch {
-      setAppleReady(false);
-    }
-  }, [appleClientId, appleRedirectUri]);
-
-  const handleAppleSignUp = async () => {
-    setError('');
-    if (!appleReady || !window.AppleID?.auth?.signIn) {
-      setError(t('auth.apple_login_failed'));
-      return;
-    }
-    try {
-      const response = await window.AppleID.auth.signIn();
-      const identityToken = response?.authorization?.id_token;
-      const fullName = response?.user?.name
-        ? [response.user.name.firstName, response.user.name.lastName].filter(Boolean).join(' ')
-        : '';
-
-      if (!identityToken) {
-        setError(t('auth.apple_login_failed'));
-        return;
-      }
-
-      const result = await appleLogin(identityToken, fullName);
-      if (result.success) {
-        navigate(redirect);
-      } else {
-        setError(result.message);
-      }
-    } catch {
-      setError(t('auth.apple_login_failed'));
-    }
-  };
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -189,17 +139,6 @@ const Register = () => {
 
           <div className="flex justify-center">
             {googleButton}
-          </div>
-
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={handleAppleSignUp}
-              disabled={!appleReady}
-              className="btn w-full max-w-[300px] bg-black text-white hover:bg-black/90 disabled:opacity-60"
-            >
-              {t('auth.continue_with_apple')}
-            </button>
           </div>
 
           <div className="text-center">
