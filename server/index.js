@@ -114,6 +114,13 @@ app.get('/', (req, res) => {
   res.send('Saria Beauty API is running');
 });
 
+app.get('/api/config/public', (req, res) => {
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    appleClientId: process.env.APPLE_CLIENT_ID || '',
+  });
+});
+
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);

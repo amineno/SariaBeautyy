@@ -29,7 +29,9 @@
     "registration_failed": "فشل التسجيل",
     "logged_out": "تم تسجيل الخروج بنجاح",
     "or_continue_with": "أو المتابعة باستخدام",
-    "google_login_failed": "فشل تسجيل الدخول عبر Google"
+    "google_login_failed": "فشل تسجيل الدخول عبر Google",
+    "continue_with_apple": "المتابعة باستخدام Apple",
+    "apple_login_failed": "فشل تسجيل الدخول عبر Apple"
   },
   "profile": {
     "title": "ملف المستخدم",

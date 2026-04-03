@@ -3,11 +3,76 @@ const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 const { OAuth2Client } = require('google-auth-library');
+const https = require('https');
+const crypto = require('crypto');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
+};
+
+const APPLE_ISSUER = 'https://appleid.apple.com';
+const APPLE_KEYS_URL = 'https://appleid.apple.com/auth/keys';
+const APPLE_KEYS_CACHE_MS = 6 * 60 * 60 * 1000;
+
+let appleKeysCache = {
+  fetchedAt: 0,
+  keys: [],
+};
+
+const fetchJson = (url) => {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+      .on('error', reject);
+  });
+};
+
+const getAppleJwks = async () => {
+  const now = Date.now();
+  if (appleKeysCache.keys.length > 0 && now - appleKeysCache.fetchedAt < APPLE_KEYS_CACHE_MS) {
+    return appleKeysCache.keys;
+  }
+  const jwks = await fetchJson(APPLE_KEYS_URL);
+  const keys = Array.isArray(jwks?.keys) ? jwks.keys : [];
+  appleKeysCache = { fetchedAt: now, keys };
+  return keys;
+};
+
+const decodeJwtHeader = (token) => {
+  const headerB64 = String(token || '').split('.')[0];
+  if (!headerB64) return null;
+  try {
+    return JSON.parse(Buffer.from(headerB64, 'base64url').toString('utf8'));
+  } catch (_) {
+    return null;
+  }
+};
+
+const getApplePublicKeyPem = async (kid) => {
+  const keys = await getAppleJwks();
+  const match = keys.find((k) => k && k.kid === kid);
+  if (!match || !Array.isArray(match.x5c) || !match.x5c[0]) {
+    throw new Error('Apple public key not found');
+  }
+  const cert = String(match.x5c[0]);
+  const certBody = cert.match(/.{1,64}/g)?.join('\n') || cert;
+  const certPem = `-----BEGIN CERTIFICATE-----\n${certBody}\n-----END CERTIFICATE-----\n`;
+  const publicKey = crypto.createPublicKey(certPem);
+  return publicKey.export({ type: 'spki', format: 'pem' });
 };
 
 // @desc    Auth user & get token
@@ -214,6 +279,91 @@ const googleLogin = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Auth user & get token via Apple
+// @route   POST /api/users/apple-login
+// @access  Public
+const appleLogin = asyncHandler(async (req, res) => {
+  const { identityToken, name } = req.body;
+
+  if (!identityToken) {
+    res.status(400);
+    throw new Error('Apple identity token is required');
+  }
+
+  const appleClientId = String(process.env.APPLE_CLIENT_ID || '').trim();
+  if (!appleClientId) {
+    res.status(503);
+    throw new Error('Apple Sign In is not configured');
+  }
+
+  const header = decodeJwtHeader(identityToken);
+  const kid = header?.kid;
+  if (!kid) {
+    res.status(400);
+    throw new Error('Invalid Apple identity token');
+  }
+
+  let payload;
+  try {
+    const publicKeyPem = await getApplePublicKeyPem(kid);
+    payload = jwt.verify(identityToken, publicKeyPem, {
+      algorithms: ['RS256'],
+      issuer: APPLE_ISSUER,
+      audience: appleClientId,
+    });
+  } catch (err) {
+    res.status(401);
+    throw new Error(`Apple authentication failed: ${err.message || 'invalid token'}`);
+  }
+
+  const appleSub = String(payload?.sub || '').trim();
+  const rawEmail = payload?.email;
+  const email = rawEmail ? String(rawEmail).trim().toLowerCase() : '';
+  const emailVerifiedRaw = payload?.email_verified;
+  const emailVerified = emailVerifiedRaw === true || String(emailVerifiedRaw).toLowerCase() === 'true';
+
+  if (!appleSub) {
+    res.status(401);
+    throw new Error('Apple authentication failed: missing subject');
+  }
+
+  if (email && !emailVerified) {
+    res.status(400);
+    throw new Error('Apple email is not verified');
+  }
+
+  let user = await User.findOne({ appleId: appleSub });
+  if (!user && email) {
+    user = await User.findOne({ email });
+  }
+
+  if (user) {
+    if (!user.appleId) {
+      user.appleId = appleSub;
+      await user.save();
+    }
+  } else {
+    if (!email) {
+      res.status(400);
+      throw new Error('Apple did not provide an email for this account');
+    }
+    const displayName = String(name || '').trim() || email.split('@')[0];
+    user = await User.create({
+      name: displayName,
+      email,
+      appleId: appleSub,
+    });
+  }
+
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin,
+    token: generateToken(user._id),
+  });
+});
+
 // @desc    Get user wishlist
 // @route   GET /api/users/wishlist
 // @access  Private
@@ -273,6 +423,7 @@ module.exports = {
   updateUserAdmin,
   deleteUser,
   googleLogin,
+  appleLogin,
   getWishlist,
   addToWishlist,
   removeFromWishlist,

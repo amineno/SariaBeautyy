@@ -8,6 +8,7 @@ const {
   updateUserAdmin,
   deleteUser,
   googleLogin,
+  appleLogin,
   getWishlist,
   addToWishlist,
   removeFromWishlist,
@@ -16,6 +17,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 router.post('/login', authUser);
 router.post('/google-login', googleLogin);
+router.post('/apple-login', appleLogin);
 router.post('/', registerUser);
 router.route('/profile').put(protect, updateUserProfile);
 router.get('/', protect, admin, getUsers);

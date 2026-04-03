@@ -39,7 +39,9 @@
     "registration_failed": "Registration failed",
     "logged_out": "Logged out successfully",
     "or_continue_with": "Or continue with",
-    "google_login_failed": "Google Login Failed"
+    "google_login_failed": "Google Login Failed",
+    "continue_with_apple": "Continue with Apple",
+    "apple_login_failed": "Apple Login Failed"
   },
   "profile": {
     "title": "User Profile",
