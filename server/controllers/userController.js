@@ -10,6 +10,11 @@ const generateToken = (id) => {
   });
 };
 
+const isAllowedSignupEmail = (email) => {
+  const normalized = String(email || '').trim().toLowerCase();
+  return normalized.endsWith('@gmail.com') || normalized.endsWith('@googlemail.com');
+};
+
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
@@ -40,6 +45,10 @@ const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!isAllowedSignupEmail(normalizedEmail)) {
+    res.status(400);
+    throw new Error('Only Gmail addresses are allowed');
+  }
   const userExists = await User.findOne({ email: normalizedEmail });
 
   if (userExists) {
@@ -182,7 +191,13 @@ const googleLogin = asyncHandler(async (req, res) => {
       throw new Error('Google email is not verified');
     }
 
-    let user = await User.findOne({ email });
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!isAllowedSignupEmail(normalizedEmail)) {
+      res.status(400);
+      throw new Error('Only Gmail addresses are allowed');
+    }
+
+    let user = await User.findOne({ email: normalizedEmail });
 
     if (user) {
       // Update googleId if not present
@@ -194,7 +209,7 @@ const googleLogin = asyncHandler(async (req, res) => {
       // Create new user
       user = await User.create({
         name,
-        email,
+        email: normalizedEmail,
         googleId: sub,
         // password is optional in schema now
       });
