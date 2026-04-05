@@ -583,29 +583,55 @@
     },
     "form": {
       "full_name": "Full name",
+      "email": "Email",
       "phone": "Phone",
       "address_line1": "Address line 1",
       "address_line2": "Address line 2 (optional)",
       "city": "City",
       "postal_code": "Postal code",
       "country": "Country",
-      "country_help": "2-letter code (e.g. TN, US, FR)",
+      "country_help": "",
       "country_placeholder": "TN",
       "qty": "Qty",
+      "pay_amount": "Pay {{amount}}",
+      "initializing_payment": "Initializing payment…",
+      "test_mode_notice": "Test mode is enabled. Use a Stripe test card (e.g. 4242 4242 4242 4242).",
+      "sections": {
+        "contact": "Contact details",
+        "shipping": "Shipping address",
+        "payment": "Payment",
+        "contact_shipping": "Contact & shipping"
+      },
       "errors": {
         "stripe_not_configured": "Stripe is not configured",
         "name_required": "Name is required",
+        "email_required": "Email is required",
+        "email_invalid": "Email is invalid",
         "phone_required": "Phone number is required",
         "address_required": "Address is required",
         "city_required": "City is required",
         "postal_code_required": "Postal code is required",
-        "country_code_required": "Country must be a 2-letter code (e.g. TN, US, FR)",
+        "country_code_required": "Country is required",
         "payment_failed": "Payment failed",
         "payment_not_completed": "Payment not completed"
       },
       "success": {
         "payment_successful": "Payment successful"
       }
+    },
+    "countries": {
+      "TN": "Tunisia (TN)",
+      "FR": "France (FR)",
+      "AE": "United Arab Emirates (AE)",
+      "DZ": "Algeria (DZ)",
+      "MA": "Morocco (MA)",
+      "SA": "Saudi Arabia (SA)",
+      "US": "United States (US)",
+      "GB": "United Kingdom (GB)",
+      "DE": "Germany (DE)",
+      "IT": "Italy (IT)",
+      "ES": "Spain (ES)",
+      "OTHER": "Other"
     }
   }
 }

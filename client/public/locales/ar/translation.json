@@ -582,29 +582,55 @@
     },
     "form": {
       "full_name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
       "phone": "رقم الهاتف",
       "address_line1": "العنوان (سطر 1)",
       "address_line2": "العنوان (سطر 2) (اختياري)",
       "city": "المدينة",
       "postal_code": "الرمز البريدي",
       "country": "البلد",
-      "country_help": "رمز من حرفين (مثل TN, US, FR)",
+      "country_help": "",
       "country_placeholder": "TN",
       "qty": "الكمية",
+      "pay_amount": "ادفع {{amount}}",
+      "initializing_payment": "جارٍ تهيئة الدفع…",
+      "test_mode_notice": "تم تفعيل وضع الاختبار. استخدم بطاقة اختبار Stripe (مثل 4242 4242 4242 4242).",
+      "sections": {
+        "contact": "معلومات الاتصال",
+        "shipping": "عنوان الشحن",
+        "payment": "الدفع",
+        "contact_shipping": "الاتصال والشحن"
+      },
       "errors": {
         "stripe_not_configured": "Stripe غير مهيأ",
         "name_required": "الاسم مطلوب",
+        "email_required": "البريد الإلكتروني مطلوب",
+        "email_invalid": "البريد الإلكتروني غير صالح",
         "phone_required": "رقم الهاتف مطلوب",
         "address_required": "العنوان مطلوب",
         "city_required": "المدينة مطلوبة",
         "postal_code_required": "الرمز البريدي مطلوب",
-        "country_code_required": "يجب أن يكون البلد رمزًا من حرفين (مثل TN, US, FR)",
+        "country_code_required": "البلد مطلوب",
         "payment_failed": "فشل الدفع",
         "payment_not_completed": "لم يكتمل الدفع"
       },
       "success": {
         "payment_successful": "تم الدفع بنجاح"
       }
+    },
+    "countries": {
+      "TN": "تونس (TN)",
+      "FR": "فرنسا (FR)",
+      "AE": "الإمارات العربية المتحدة (AE)",
+      "DZ": "الجزائر (DZ)",
+      "MA": "المغرب (MA)",
+      "SA": "السعودية (SA)",
+      "US": "الولايات المتحدة (US)",
+      "GB": "المملكة المتحدة (GB)",
+      "DE": "ألمانيا (DE)",
+      "IT": "إيطاليا (IT)",
+      "ES": "إسبانيا (ES)",
+      "OTHER": "أخرى"
     }
   }
 }

@@ -11,19 +11,22 @@ import { useCurrency } from '../context/CurrencyContext';
 const stripePublishableKey = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '').trim();
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
-const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
+const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
-  const [country, setCountry] = useState('');
+  const [countryCode, setCountryCode] = useState('TN');
+  const [countryOther, setCountryOther] = useState('');
 
   useEffect(() => {
     let isActive = true;
@@ -31,6 +34,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
     const init = async () => {
       if (!amountCents || amountCents <= 0) return;
       setIsLoading(true);
+      setErrorMessage('');
       try {
         const { data } = await api.post('/payment/create-payment-intent', {
           amount: amountCents,
@@ -41,7 +45,9 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
       } catch (e) {
         if (!isActive) return;
         setClientSecret('');
-        toast.error(e.response?.data?.message || e.response?.data?.error || t('checkout.errors.payment_init_failed'));
+        const msg = e.response?.data?.message || e.response?.data?.error || t('checkout.errors.payment_init_failed');
+        setErrorMessage(String(msg || ''));
+        toast.error(msg);
       } finally {
         if (isActive) setIsLoading(false);
       }
@@ -57,9 +63,21 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
     e.preventDefault();
     if (!stripe || !elements || !clientSecret) return;
 
-    const normalizedCountry = String(country || '').trim().toUpperCase();
+    setErrorMessage('');
+    const selectedCode = String(countryCode || '').trim().toUpperCase();
+    const normalizedCountry =
+      selectedCode === 'OTHER' ? String(countryOther || '').trim().toUpperCase() : selectedCode;
     if (!fullName.trim()) {
       toast.error(t('checkout.form.errors.name_required'));
+      return;
+    }
+    if (!email.trim()) {
+      toast.error(t('checkout.form.errors.email_required'));
+      return;
+    }
+    const normalizedEmail = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      toast.error(t('checkout.form.errors.email_invalid'));
       return;
     }
     if (!phone.trim()) {
@@ -90,6 +108,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
           card: elements.getElement(CardElement),
           billing_details: {
             name: fullName.trim(),
+            email: normalizedEmail,
             phone: phone.trim(),
             address: {
               line1: addressLine1.trim(),
@@ -114,7 +133,9 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
       });
 
       if (result.error) {
-        toast.error(result.error.message || t('checkout.form.errors.payment_failed'));
+        const msg = result.error.message || t('checkout.form.errors.payment_failed');
+        setErrorMessage(String(msg || ''));
+        toast.error(msg);
         return;
       }
 
@@ -122,7 +143,9 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
         toast.success(t('checkout.form.success.payment_successful'));
         if (typeof onSuccess === 'function') onSuccess(result.paymentIntent);
       } else {
-        toast.error(t('checkout.form.errors.payment_not_completed'));
+        const msg = t('checkout.form.errors.payment_not_completed');
+        setErrorMessage(String(msg || ''));
+        toast.error(msg);
       }
     } finally {
       setIsLoading(false);
@@ -131,7 +154,25 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-3">
+          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t('checkout.steps.shipping')}</div>
+          <div className="text-sm font-bold text-gray-900 dark:text-white">{t('checkout.form.sections.contact_shipping')}</div>
+        </div>
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-3">
+          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t('checkout.steps.payment')}</div>
+          <div className="text-sm font-bold text-gray-900 dark:text-white">{t('checkout.form.sections.payment')}</div>
+        </div>
+      </div>
+
+      {stripePublishableKey.startsWith('pk_test_') && (
+        <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-900/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+          {t('checkout.form.test_mode_notice')}
+        </div>
+      )}
+
+      <div className="card p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl space-y-4">
+        <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('checkout.form.sections.contact')}</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -146,6 +187,20 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
           </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t('checkout.form.email')}
+            </label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="email"
+              inputMode="email"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('checkout.form.phone')}
             </label>
             <input
@@ -156,7 +211,10 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
             />
           </div>
         </div>
+      </div>
 
+      <div className="card p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl space-y-4">
+        <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('checkout.form.sections.shipping')}</div>
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t('checkout.form.address_line1')}
@@ -208,30 +266,64 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('checkout.form.country')}
             </label>
-            <input
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
+            <select
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
               className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
               autoComplete="country"
-              placeholder={t('checkout.form.country_placeholder')}
-            />
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              {t('checkout.form.country_help')}
-            </div>
+            >
+              <option value="TN">{t('checkout.countries.TN')}</option>
+              <option value="FR">{t('checkout.countries.FR')}</option>
+              <option value="AE">{t('checkout.countries.AE')}</option>
+              <option value="DZ">{t('checkout.countries.DZ')}</option>
+              <option value="MA">{t('checkout.countries.MA')}</option>
+              <option value="SA">{t('checkout.countries.SA')}</option>
+              <option value="US">{t('checkout.countries.US')}</option>
+              <option value="GB">{t('checkout.countries.GB')}</option>
+              <option value="DE">{t('checkout.countries.DE')}</option>
+              <option value="IT">{t('checkout.countries.IT')}</option>
+              <option value="ES">{t('checkout.countries.ES')}</option>
+              <option value="OTHER">{t('checkout.countries.OTHER')}</option>
+            </select>
+            {countryCode === 'OTHER' ? (
+              <input
+                value={countryOther}
+                onChange={(e) => setCountryOther(e.target.value)}
+                className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300 mt-2"
+                placeholder={t('checkout.form.country_placeholder')}
+              />
+            ) : null}
           </div>
         </div>
       </div>
 
-      <div className="card p-5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl">
-        <CardElement options={{ hidePostalCode: true }} />
+      <div className="card p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl space-y-4">
+        <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('checkout.form.sections.payment')}</div>
+        <div className="text-sm text-gray-600 dark:text-gray-300">
+          {t('checkout.payment.element_help')}
+        </div>
+        <div className="card p-5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl">
+          <CardElement options={{ hidePostalCode: true }} />
+        </div>
+
+        {errorMessage ? (
+          <div className="text-sm text-red-600 dark:text-red-400">
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={!stripe || !clientSecret || isLoading}
+          className="btn btn-primary w-full flex justify-center items-center"
+        >
+          {isLoading
+            ? t('checkout.form.initializing_payment')
+            : clientSecret
+              ? payLabel
+              : t('checkout.form.initializing_payment')}
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={!stripe || !clientSecret || isLoading}
-        className="btn btn-primary w-full flex justify-center items-center"
-      >
-        {isLoading ? t('checkout.payment.processing') : t('checkout.payment.pay_now')}
-      </button>
     </form>
   );
 };
@@ -300,6 +392,7 @@ const Checkout = () => {
             <CheckoutForm
               amountCents={amountCents}
               currency={currency}
+              payLabel={t('checkout.form.pay_amount', { amount: formatPrice(subtotal) })}
               onSuccess={() => {
                 clearCart();
               }}

@@ -40,6 +40,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     });
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
+    const rawMessage = String(err?.message || '').trim();
     const stripeType = err?.type;
     if (stripeType === 'StripeInvalidRequestError') {
       res.status(400);
@@ -50,7 +51,10 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     } else {
       res.status(500);
     }
-    throw new Error(err?.message || 'Stripe error');
+    if (stripeType === 'StripeAuthenticationError' || rawMessage.toLowerCase().includes('invalid api key')) {
+      throw new Error('Payment service configuration error');
+    }
+    throw new Error(rawMessage || 'Stripe error');
   }
 });
 

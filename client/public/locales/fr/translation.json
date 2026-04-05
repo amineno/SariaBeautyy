@@ -567,29 +567,55 @@
     },
     "form": {
       "full_name": "Nom complet",
+      "email": "E-mail",
       "phone": "Téléphone",
       "address_line1": "Adresse (ligne 1)",
       "address_line2": "Adresse (ligne 2) (optionnel)",
       "city": "Ville",
       "postal_code": "Code postal",
       "country": "Pays",
-      "country_help": "Code à 2 lettres (ex: TN, US, FR)",
+      "country_help": "",
       "country_placeholder": "TN",
       "qty": "Qté",
+      "pay_amount": "Payer {{amount}}",
+      "initializing_payment": "Initialisation du paiement…",
+      "test_mode_notice": "Le mode test est activé. Utilisez une carte de test Stripe (ex: 4242 4242 4242 4242).",
+      "sections": {
+        "contact": "Coordonnées",
+        "shipping": "Adresse de livraison",
+        "payment": "Paiement",
+        "contact_shipping": "Coordonnées & livraison"
+      },
       "errors": {
         "stripe_not_configured": "Stripe n'est pas configuré",
         "name_required": "Le nom est obligatoire",
+        "email_required": "L'e-mail est obligatoire",
+        "email_invalid": "L'e-mail est invalide",
         "phone_required": "Le numéro de téléphone est obligatoire",
         "address_required": "L'adresse est obligatoire",
         "city_required": "La ville est obligatoire",
         "postal_code_required": "Le code postal est obligatoire",
-        "country_code_required": "Le pays doit être un code à 2 lettres (ex: TN, US, FR)",
+        "country_code_required": "Le pays est obligatoire",
         "payment_failed": "Le paiement a échoué",
         "payment_not_completed": "Paiement non terminé"
       },
       "success": {
         "payment_successful": "Paiement réussi"
       }
+    },
+    "countries": {
+      "TN": "Tunisie (TN)",
+      "FR": "France (FR)",
+      "AE": "Émirats arabes unis (AE)",
+      "DZ": "Algérie (DZ)",
+      "MA": "Maroc (MA)",
+      "SA": "Arabie saoudite (SA)",
+      "US": "États-Unis (US)",
+      "GB": "Royaume-Uni (GB)",
+      "DE": "Allemagne (DE)",
+      "IT": "Italie (IT)",
+      "ES": "Espagne (ES)",
+      "OTHER": "Autre"
     }
   }
 }
