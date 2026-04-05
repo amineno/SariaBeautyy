@@ -39,18 +39,47 @@ app.use(globalLimiter);
 
 const corsOptions = {};
 
-if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGIN) {
-  const normalizeOrigin = (value) => {
-    const raw = String(value || '').trim();
-    if (!raw) return '';
-    return raw.replace(/\/$/, '').toLowerCase();
-  };
-  const allowedOrigins = process.env.CORS_ORIGIN.split(',')
-    .map((o) => normalizeOrigin(o))
-    .filter(Boolean);
+const normalizeOrigin = (value) => {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const unwrapped = raw.replace(/^['"`]+|['"`]+$/g, '');
+  return unwrapped.replace(/\/$/, '').toLowerCase();
+};
+
+const defaultAllowedOrigins = [
+  'https://www.sariabeauty.com',
+  'https://sariabeauty.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].map((o) => normalizeOrigin(o));
+
+const envAllowedOrigins = String(process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => normalizeOrigin(o))
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllowedOrigins]));
+
+const isAllowedOrigin = (origin) => {
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (!normalizedOrigin) return true;
+  if (allowedOrigins.includes(normalizedOrigin)) return true;
+
+  try {
+    const url = new URL(origin);
+    if (url.protocol === 'https:' && (url.hostname === 'sariabeauty.com' || url.hostname.endsWith('.sariabeauty.com'))) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+};
+
+if (process.env.NODE_ENV === 'production') {
   corsOptions.origin = (origin, callback) => {
-    const normalizedOrigin = normalizeOrigin(origin);
-    if (!origin || allowedOrigins.includes(normalizedOrigin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -73,6 +102,7 @@ const webhookLimiter = rateLimit({
 });
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(
   helmet({
     contentSecurityPolicy: {

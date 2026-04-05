@@ -20,8 +20,13 @@ const getStripeClient = () => {
 // @route   GET /api/payment/config
 // @access  Public
 const sendStripeApiKey = asyncHandler(async (req, res) => {
+  const publishableKey = String(process.env.STRIPE_PUBLISHABLE_KEY || '').trim();
+  if (publishableKey && publishableKey.startsWith('sk_')) {
+    res.status(500);
+    throw new Error('Invalid Stripe publishable key configuration');
+  }
   res.json({
-    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+    publishableKey,
   });
 });
 
