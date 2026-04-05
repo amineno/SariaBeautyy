@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { useCart } from '../hooks/useCart';
+import { useCurrency } from '../context/CurrencyContext';
 
 const stripePublishableKey = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '').trim();
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
-const CheckoutForm = ({ amountCents, currency }) => {
+const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState('');
@@ -115,6 +118,7 @@ const CheckoutForm = ({ amountCents, currency }) => {
 
       if (result.paymentIntent?.status === 'succeeded') {
         toast.success('Payment successful');
+        if (typeof onSuccess === 'function') onSuccess(result.paymentIntent);
       } else {
         toast.error('Payment not completed');
       }
@@ -228,14 +232,25 @@ const CheckoutForm = ({ amountCents, currency }) => {
 };
 
 const Checkout = () => {
-  const [amountDollars, setAmountDollars] = useState('50.00');
+  const { cartItems, clearCart } = useCart();
+  const { formatPrice } = useCurrency();
   const currency = 'usd';
 
+  const resolveImage = (img) => {
+    if (!img) return '';
+    const lower = String(img).toLowerCase();
+    if (lower.startsWith('http') || lower.startsWith('data:') || lower.startsWith('/')) return img;
+    return `/images/${img}`;
+  };
+
+  const subtotal = useMemo(() => {
+    return (cartItems || []).reduce((acc, item) => acc + Number(item.price || 0) * Number(item.qty || 0), 0);
+  }, [cartItems]);
+
   const amountCents = useMemo(() => {
-    const numeric = Number(amountDollars);
-    if (!Number.isFinite(numeric) || numeric <= 0) return 0;
-    return Math.round(numeric * 100);
-  }, [amountDollars]);
+    if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
+    return Math.round(subtotal * 100);
+  }, [subtotal]);
 
   if (!stripePromise) {
     return (
@@ -249,31 +264,90 @@ const Checkout = () => {
     );
   }
 
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-xl mx-auto card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-4">
+          <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
+            Checkout
+          </h1>
+          <div className="text-gray-600 dark:text-gray-300">
+            Your cart is empty.
+          </div>
+          <Link to="/shop" className="btn btn-primary w-full">
+            Go to shop
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-xl mx-auto card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6">
-        <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
-          Checkout
-        </h1>
+      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6">
+          <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
+            Checkout
+          </h1>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Amount (USD)
-          </label>
-          <input
-            type="number"
-            inputMode="decimal"
-            min="0"
-            step="0.01"
-            value={amountDollars}
-            onChange={(e) => setAmountDollars(e.target.value)}
-            className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
-          />
+          <Elements stripe={stripePromise}>
+            <CheckoutForm
+              amountCents={amountCents}
+              currency={currency}
+              onSuccess={() => {
+                clearCart();
+              }}
+            />
+          </Elements>
         </div>
 
-        <Elements stripe={stripePromise}>
-          <CheckoutForm amountCents={amountCents} currency={currency} />
-        </Elements>
+        <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6">
+          <h2 className="text-xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
+            Order summary
+          </h2>
+
+          <div className="space-y-4">
+            {cartItems.map((item) => (
+              <div key={item._id} className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img
+                      src={resolveImage(item.image)}
+                      alt={item.name}
+                      className="w-12 h-12 object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {item.name}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Qty: {item.qty}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white flex-shrink-0">
+                  {formatPrice(Number(item.price || 0) * Number(item.qty || 0))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+              <span>Subtotal</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+              <span>Shipping</span>
+              <span>{formatPrice(0)}</span>
+            </div>
+            <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
+              <span>Total</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
