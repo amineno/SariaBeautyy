@@ -594,7 +594,7 @@
       "qty": "الكمية",
       "pay_amount": "ادفع {{amount}}",
       "initializing_payment": "جارٍ تهيئة الدفع…",
-      "test_mode_notice": "تم تفعيل وضع الاختبار. استخدم بطاقة اختبار Stripe (مثل 4242 4242 4242 4242).",
+      "test_mode_notice": "",
       "sections": {
         "contact": "معلومات الاتصال",
         "shipping": "عنوان الشحن",

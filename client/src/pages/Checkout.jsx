@@ -165,12 +165,6 @@ const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
         </div>
       </div>
 
-      {stripePublishableKey.startsWith('pk_test_') && (
-        <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-900/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
-          {t('checkout.form.test_mode_notice')}
-        </div>
-      )}
-
       <div className="card p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl space-y-4">
         <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('checkout.form.sections.contact')}</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

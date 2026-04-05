@@ -579,7 +579,7 @@
       "qty": "Qté",
       "pay_amount": "Payer {{amount}}",
       "initializing_payment": "Initialisation du paiement…",
-      "test_mode_notice": "Le mode test est activé. Utilisez une carte de test Stripe (ex: 4242 4242 4242 4242).",
+      "test_mode_notice": "",
       "sections": {
         "contact": "Coordonnées",
         "shipping": "Adresse de livraison",
