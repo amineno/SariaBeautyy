@@ -10,8 +10,12 @@ let stripeClient = null;
 
 const getStripeClient = () => {
   if (stripeClient) return stripeClient;
-  const apiKey = process.env.STRIPE_SECRET_KEY;
+  const apiKey = String(process.env.STRIPE_SECRET_KEY || '').trim();
   if (!apiKey) return null;
+  const allowLiveKeys = String(process.env.ALLOW_STRIPE_LIVE_KEYS || '').toLowerCase() === 'true';
+  if (!allowLiveKeys && apiKey.startsWith('sk_live_')) {
+    return null;
+  }
   stripeClient = new Stripe(apiKey);
   return stripeClient;
 };
@@ -21,6 +25,11 @@ const getStripeClient = () => {
 // @access  Public
 const sendStripeApiKey = asyncHandler(async (req, res) => {
   const publishableKey = String(process.env.STRIPE_PUBLISHABLE_KEY || '').trim();
+  const allowLiveKeys = String(process.env.ALLOW_STRIPE_LIVE_KEYS || '').toLowerCase() === 'true';
+  if (!allowLiveKeys && publishableKey.startsWith('pk_live_')) {
+    res.status(500);
+    throw new Error('Stripe live keys are disabled');
+  }
   if (publishableKey && publishableKey.startsWith('sk_')) {
     res.status(500);
     throw new Error('Invalid Stripe publishable key configuration');
@@ -34,43 +43,59 @@ const sendStripeApiKey = asyncHandler(async (req, res) => {
 // @route   POST /api/payment/create-payment-intent
 // @access  Private
 const createPaymentIntent = asyncHandler(async (req, res) => {
+  console.log('create-payment-intent req.body:', req.body);
   const stripe = getStripeClient();
   if (!stripe) {
     res.status(503);
     throw new Error('Stripe is not configured');
   }
 
-  const { orderId } = req.body;
-  const currency = 'aed';
+  const amount = Number(req.body?.amount);
+  const orderId = req.body?.orderId;
+  const currency = 'usd';
 
-  if (!orderId) {
+  if (!Number.isFinite(amount) || amount <= 0) {
     res.status(400);
-    throw new Error('Order ID is required');
+    throw new Error('Amount is required and must be a positive number');
   }
 
-  const order = await Order.findById(orderId);
-
-  if (!order) {
-    res.status(404);
-    throw new Error('Order not found');
-  }
-
-  if (!order.user.equals(req.user._id)) {
-    res.status(403);
-    throw new Error('Not authorized to pay for this order');
-  }
-
-  if (order.isPaid) {
+  const amountInCents = Math.round(amount);
+  if (!Number.isInteger(amountInCents) || amountInCents <= 0) {
     res.status(400);
-    throw new Error('Order is already paid');
+    throw new Error('Amount must be an integer in cents');
   }
-
-  const amountInCents = Math.round(order.totalPrice * 100);
 
   try {
+    let order = null;
+
+    if (orderId) {
+      order = await Order.findById(orderId);
+
+      if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
+      }
+
+      if (!order.user.equals(req.user._id)) {
+        res.status(403);
+        throw new Error('Not authorized to pay for this order');
+      }
+
+      if (order.isPaid) {
+        res.status(400);
+        throw new Error('Order is already paid');
+      }
+
+      const expectedAmountInCents = Math.round(Number(order.totalPrice || 0) * 100);
+      if (expectedAmountInCents > 0 && expectedAmountInCents !== amountInCents) {
+        res.status(400);
+        throw new Error('Amount mismatch');
+      }
+    }
+
     let paymentIntent;
 
-    if (order.stripePaymentIntentId) {
+    if (order && order.stripePaymentIntentId) {
       paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
     }
 
@@ -82,18 +107,16 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
           automatic_payment_methods: {
             enabled: true,
           },
-          metadata: {
-            orderId: String(order._id),
-          },
+          metadata: order ? { orderId: String(order._id) } : undefined,
         },
-        {
-          idempotencyKey: `order_${order._id}`,
-        }
+        order ? { idempotencyKey: `order_${order._id}` } : undefined
       );
 
-      order.stripePaymentIntentId = paymentIntent.id;
-      order.paymentProvider = 'Stripe';
-      await order.save();
+      if (order) {
+        order.stripePaymentIntentId = paymentIntent.id;
+        order.paymentProvider = 'Stripe';
+        await order.save();
+      }
     } else if (paymentIntent.status === 'succeeded') {
       res.status(400);
       throw new Error('Payment already succeeded for this order');
@@ -103,6 +126,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
+    console.log(error.message);
     console.error('Stripe Error:', error);
     res.status(400);
     throw new Error(error.message);

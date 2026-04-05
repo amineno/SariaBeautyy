@@ -31,6 +31,7 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPayPalReady, setIsPayPalReady] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const [orderTotalPrice, setOrderTotalPrice] = useState(null);
   const [stripeConfigError, setStripeConfigError] = useState('');
   const [isStripeConfigLoading, setIsStripeConfigLoading] = useState(true);
 
@@ -95,6 +96,7 @@ const Checkout = () => {
           };
 
           let currentOrderId = orderId;
+          let currentTotalPrice = orderTotalPrice;
 
           if (!currentOrderId) {
             const orderPayload = {
@@ -111,11 +113,25 @@ const Checkout = () => {
             const createdOrder = await api.post('/orders', orderPayload, config);
             currentOrderId = createdOrder.data._id;
             setOrderId(currentOrderId);
+            currentTotalPrice = createdOrder.data.totalPrice;
+            setOrderTotalPrice(currentTotalPrice);
+          } else if (currentTotalPrice == null) {
+            const existingOrder = await api.get(`/orders/${currentOrderId}`, config);
+            currentTotalPrice = existingOrder.data.totalPrice;
+            setOrderTotalPrice(currentTotalPrice);
           }
+
+          const resolvedTotalPrice = Number(currentTotalPrice ?? totalPrice);
+          if (!Number.isFinite(resolvedTotalPrice) || resolvedTotalPrice <= 0) {
+            throw new Error('Invalid total price');
+          }
+          const amount = Math.round(resolvedTotalPrice * 100);
+          const payload = { amount, orderId: currentOrderId };
+          console.log('Stripe create-payment-intent payload:', payload);
 
           const { data } = await api.post(
             '/payment/create-payment-intent',
-            { orderId: currentOrderId },
+            payload,
             config
           );
           setClientSecret(data.clientSecret);
@@ -126,7 +142,7 @@ const Checkout = () => {
       };
       initStripePayment();
     }
-  }, [activeStep, paymentMethod, totalPrice, user, clientSecret, t, cartItems, shippingAddress, orderId]);
+  }, [activeStep, paymentMethod, totalPrice, user, clientSecret, t, cartItems, shippingAddress, orderId, orderTotalPrice]);
 
   useEffect(() => {
     if (activeStep === 3 && paymentMethod === 'PayPal' && !isPayPalReady && totalPrice > 0) {
