@@ -11,15 +11,18 @@ const ProfileScreen = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('messages');
+  const [activeTab, setActiveTab] = useState('orders');
   const [name, setName] = useState(() => (user?.name || ''));
   const [email, setEmail] = useState(() => (user?.email || ''));
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [messages, setMessages] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(true);
   const [errorMessages, setErrorMessages] = useState(null);
+  const [errorOrders, setErrorOrders] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -42,7 +45,25 @@ const ProfileScreen = () => {
         }
       };
 
+      const fetchMyOrders = async () => {
+        try {
+          setLoadingOrders(true);
+          const config = {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          };
+          const { data } = await api.get('/payment/my-orders', config);
+          setOrders(data);
+          setLoadingOrders(false);
+        } catch (err) {
+          setErrorOrders(err.response && err.response.data.message ? err.response.data.message : err.message);
+          setLoadingOrders(false);
+        }
+      };
+
       fetchMyMessages();
+      fetchMyOrders();
     }
   }, [user, navigate]);
 
@@ -162,24 +183,83 @@ const ProfileScreen = () => {
           <div className="flex space-x-6 mb-6 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
             <button
               className={`pb-2 px-1 text-lg font-medium transition-colors relative ${
+                activeTab === 'orders' 
+                  ? 'text-primary border-b-2 border-primary' 
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+              }`}
+              onClick={() => setActiveTab('orders')}
+            >
+              {t('profile.my_orders')}
+            </button>
+            <button
+              className={`pb-2 px-1 text-lg font-medium transition-colors relative ${
                 activeTab === 'messages' 
                   ? 'text-primary border-b-2 border-primary' 
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
               onClick={() => setActiveTab('messages')}
             >
-              Support Messages
+              {t('profile.support_messages')}
             </button>
           </div>
 
-          {loadingMessages ? (
-            <div className="text-center text-lg text-gray-600 dark:text-gray-400">Loading messages...</div>
+          {activeTab === 'orders' ? (
+            loadingOrders ? (
+              <div className="text-center text-lg text-gray-600 dark:text-gray-400">{t('profile.loading_orders')}</div>
+            ) : errorOrders ? (
+              <div className="card p-3 text-red-700 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-900 bg-red-50/60 dark:bg-red-900/20">{errorOrders}</div>
+            ) : (
+              <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent hover:ring-primary/20 transition-all duration-300 shadow-xl">
+                {orders.length === 0 ? (
+                  <div className="text-center text-lg text-gray-600 dark:text-gray-400">{t('profile.no_orders')}</div>
+                ) : (
+                  <div className="space-y-6">
+                    {orders.map((order) => (
+                      <div key={order._id} className="card p-6 hover:shadow-md transition-all duration-200 bg-white dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-2">
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+                              {t('profile.order')} #{order._id.slice(-6).toUpperCase()}
+                            </h3>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {new Date(order.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                            }`}>
+                              {order.paymentStatus === 'paid' ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
+                            </span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              order.status === 'delivered' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                            }`}>
+                              {order.status === 'delivered' ? t('admin.orders.status.delivered') : order.status === 'shipped' ? t('admin.orders.status.shipped') : t('admin.orders.status.pending')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="border-t border-gray-100 dark:border-gray-600 pt-4 mt-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{order.items?.length || 0} {t('profile.items')}</span>
+                            <span className="text-lg font-bold text-gray-900 dark:text-white">
+                              {order.total.toFixed(2)} AED
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          ) : loadingMessages ? (
+            <div className="text-center text-lg text-gray-600 dark:text-gray-400">{t('profile.loading_messages')}</div>
           ) : errorMessages ? (
             <div className="card p-3 text-red-700 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-900 bg-red-50/60 dark:bg-red-900/20">{errorMessages}</div>
           ) : (
             <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent hover:ring-primary/20 transition-all duration-300 shadow-xl">
               {messages.length === 0 ? (
-                <div className="text-center text-lg text-gray-600 dark:text-gray-400">No support messages found.</div>
+                <div className="text-center text-lg text-gray-600 dark:text-gray-400">{t('profile.no_messages')}</div>
               ) : (
                 <div className="space-y-6">
                   {messages.map((msg) => (
@@ -197,12 +277,12 @@ const ProfileScreen = () => {
                         <span className={`px-3 py-1 rounded-full text-xs font-medium self-start ${
                           msg.isReplied ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
                         }`}>
-                          {msg.isReplied ? 'Replied' : 'Pending'}
+                          {msg.isReplied ? t('admin.messages.status.replied') : t('admin.orders.status.pending')}
                         </span>
                       </div>
 
                       <div className="bg-gray-50 dark:bg-gray-600/30 p-4 rounded-lg mb-4">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Your message:</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.your_message')}</p>
                         <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{msg.message}</p>
                       </div>
 
@@ -212,7 +292,7 @@ const ProfileScreen = () => {
                             <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
                               A
                             </div>
-                            <p className="text-sm font-bold text-gray-900 dark:text-white">Admin Reply</p>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">{t('profile.admin_reply')}</p>
                             <span className="text-xs text-gray-400 ml-auto">
                               {new Date(msg.repliedAt).toLocaleDateString()}
                             </span>

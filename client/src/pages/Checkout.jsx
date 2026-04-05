@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { useCart } from '../hooks/useCart';
 import { useCurrency } from '../context/CurrencyContext';
+import { useAuth } from '../hooks/useAuth';
 
 const stripePublishableKey = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '').trim();
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -324,9 +325,18 @@ const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
 
 const Checkout = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { cartItems, clearCart } = useCart();
   const { formatPrice } = useCurrency();
+  const { user } = useAuth();
   const currency = 'usd';
+
+  useEffect(() => {
+    if (!user) {
+      toast.error(t('profile.login_required'));
+      navigate('/login');
+    }
+  }, [user, navigate, t]);
 
   const resolveImage = (img) => {
     if (!img) return '';
@@ -343,6 +353,28 @@ const Checkout = () => {
     if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
     return Math.round(subtotal * 100);
   }, [subtotal]);
+
+  const handleOrderSuccess = async (paymentIntent) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      await api.post('/payment/order', {
+        items: cartItems,
+        total: subtotal,
+        paymentIntentId: paymentIntent.id
+      }, config);
+
+      clearCart();
+      toast.success(t('checkout.success.order_placed'));
+    } catch (err) {
+      console.error('Order creation failed', err);
+      toast.error(t('checkout.errors.order_failed'));
+    }
+  };
 
   if (!stripePromise) {
     return (
@@ -387,9 +419,7 @@ const Checkout = () => {
               amountCents={amountCents}
               currency={currency}
               payLabel={t('checkout.form.pay_amount', { amount: formatPrice(subtotal) })}
-              onSuccess={() => {
-                clearCart();
-              }}
+              onSuccess={handleOrderSuccess}
             />
           </Elements>
         </div>

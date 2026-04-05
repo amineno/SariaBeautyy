@@ -10,7 +10,7 @@ import {
   BarChart3, RefreshCw, LayoutDashboard, 
   ChevronRight, Search, Filter, Image as ImageIcon,
   DollarSign, Box, UserCheck, AlertCircle, X,
-  TrendingUp, TrendingDown, Target, Zap, Star
+  TrendingUp, TrendingDown, Target, Truck, Zap, Star
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -52,7 +52,8 @@ const AdminDashboard = () => {
     countInStock: '', nameFr: '', descFr: '', nameAr: '', descAr: '' 
   });
   const [editingId, setEditingId] = useState(null);
-  const [stats, setStats] = useState({ totalSales: 0, products: 0, customers: 0 });
+  const [stats, setStats] = useState({ totalSales: 0, products: 0, customers: 0, orders: 0 });
+  const [orders, setOrders] = useState([]);
   const [categories, setCategories] = useState([]);
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
@@ -96,13 +97,14 @@ const AdminDashboard = () => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [pRes, uRes, sRes, cRes, mRes, aRes] = await Promise.all([
+        const [pRes, uRes, sRes, cRes, mRes, aRes, oRes] = await Promise.all([
           api.get('/products', authHeader),
           api.get('/users', authHeader),
           api.get('/admin/stats', authHeader),
           api.get('/products/categories/list', authHeader),
           api.get('/contact', authHeader),
-          api.get('/pages/about', authHeader)
+          api.get('/pages/about', authHeader),
+          api.get('/admin/orders', authHeader)
         ]);
         setProducts(pRes.data || []);
         const rv = (pRes.data || []).flatMap(p => (p.reviews || []).map(r => ({
@@ -118,6 +120,7 @@ const AdminDashboard = () => {
         setCategories(cRes.data || []);
         setMessages(mRes.data || []);
         setAboutContent(aRes.data || null);
+        setOrders(oRes.data || []);
       } catch (e) {
         console.error('Admin fetch error', e);
       } finally {
@@ -348,9 +351,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const updateOrderStatus = async (id, status) => {
+    try {
+      const { data } = await api.put(`/admin/orders/${id}/status`, { status }, authHeader);
+      setOrders(prev => prev.map(o => o._id === id ? data : o));
+      toast.success(t('admin.orders.status_update_success'));
+    } catch (e) {
+      toast.error(e.response?.data?.message || t('admin.orders.status_update_error'));
+      console.error('Update status failed', e);
+    }
+  };
+
   const sidebarItems = [
     { id: 'stats', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard },
     { id: 'products', label: t('admin.sidebar.products'), icon: Package },
+    { id: 'orders', label: t('admin.sidebar.orders'), icon: ShoppingCart },
     { id: 'users', label: t('admin.sidebar.users'), icon: Users },
     { id: 'reviews', label: t('admin.sidebar.reviews'), icon: Star },
     { id: 'messages', label: t('admin.sidebar.messages'), icon: Zap },
@@ -760,6 +775,7 @@ const AdminDashboard = () => {
                     color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
                     change: salesChangePercent 
                   },
+                  { label: t('admin.stats.total_orders'), value: stats.orders, icon: ShoppingCart, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' },
                   { label: t('admin.stats.products'), value: stats.products, icon: Box, color: 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400' },
                   { label: t('admin.stats.customers'), value: stats.customers, icon: UserCheck, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' },
                 ].map((stat, i) => (
@@ -1022,6 +1038,79 @@ const AdminDashboard = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Orders View */}
+          {activeTab === 'orders' && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50/50 dark:bg-gray-700/50">
+                      <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('admin.orders.table.order')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('admin.orders.table.customer')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('admin.orders.table.payment')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('admin.orders.table.shipping')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">{t('admin.table.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {orders.map((o) => (
+                      <tr key={o._id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">#{o._id.slice(-6).toUpperCase()}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(o.createdAt).toLocaleDateString()}</div>
+                          <div className="text-xs font-medium text-primary mt-1">{o.items?.length || 0} {t('admin.orders.items')}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">{o.user?.name || t('admin.orders.guest')}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{o.user?.email || t('admin.orders.no_email')}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">{formatPrice(o.total)}</div>
+                          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase mt-1 ${
+                            o.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                          }`}>
+                            {o.paymentStatus === 'paid' ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
+                            o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 
+                            o.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 
+                            'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                          }`}>
+                            {o.status === 'delivered' ? t('admin.orders.status.delivered') : 
+                             o.status === 'shipped' ? t('admin.orders.status.shipped') : 
+                             t('admin.orders.status.pending')}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            {o.status === 'pending' && (
+                              <button 
+                                onClick={() => updateOrderStatus(o._id, 'shipped')}
+                                className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors"
+                              >
+                                {t('admin.orders.mark_shipped') || 'Mark Shipped'}
+                              </button>
+                            )}
+                            {o.status === 'shipped' && (
+                              <button 
+                                onClick={() => updateOrderStatus(o._id, 'delivered')}
+                                className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg transition-colors"
+                              >
+                                {t('admin.orders.mark_delivered')}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}

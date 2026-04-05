@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Stripe = require('stripe');
+const Order = require('../models/Order');
 
 let stripeClient = null;
 
@@ -58,4 +59,33 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createPaymentIntent };
+const createOrder = asyncHandler(async (req, res) => {
+  const { items, total, paymentIntentId } = req.body;
+
+  if (!items || items.length === 0) {
+    res.status(400);
+    throw new Error('No order items');
+  }
+
+  const order = new Order({
+    user: req.user._id,
+    items: items.map(item => ({
+      product: item.productId || item._id,
+      quantity: item.qty || item.quantity,
+      price: item.price
+    })),
+    total,
+    paymentStatus: 'paid', // For now, assume paid if this is called after successful stripe payment
+    status: 'pending'
+  });
+
+  const createdOrder = await order.save();
+  res.status(201).json(createdOrder);
+});
+
+const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+  res.json(orders);
+});
+
+module.exports = { createPaymentIntent, createOrder, getMyOrders };

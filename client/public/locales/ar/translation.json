@@ -62,7 +62,12 @@
     "each": "لكل",
     "name_placeholder": "أدخل الاسم",
     "email_placeholder": "أدخل البريد الإلكتروني",
-    "enter_password_placeholder": "أدخل كلمة المرور"
+    "enter_password_placeholder": "أدخل كلمة المرور",
+    "support_messages": "رسائل الدعم",
+    "loading_messages": "جارٍ تحميل الرسائل...",
+    "no_messages": "لم يتم العثور على رسائل دعم.",
+    "your_message": "رسالتك:",
+    "admin_reply": "رد الإدارة"
   },
   "hero": {
     "premium_badge": "مجموعة الجمال الفاخرة",
@@ -387,6 +392,7 @@
       "mark_paid": "وضع علامة كمدفوع",
       "mark_undelivered": "وضع علامة كغير مسلّم",
       "mark_delivered": "وضع علامة كمسلّم",
+      "mark_shipped": "تحديد كمشحون",
       "order": "طلب",
       "customer_label": "العميل",
       "customer": "العميل",
@@ -398,7 +404,9 @@
       "status": {
         "paid": "مدفوع",
         "unpaid": "غير مدفوع",
+        "shipped": "تم الشحن",
         "delivered": "مسلّم",
+        "pending": "قيد الانتظار",
         "processing": "قيد المعالجة"
       },
       "table": {

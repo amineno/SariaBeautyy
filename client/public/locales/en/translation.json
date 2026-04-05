@@ -70,9 +70,13 @@
     "not_delivered": "Not Delivered",
     "items": "Items",
     "each": "each",
-    "name_placeholder": "Enter name",
     "email_placeholder": "Enter email",
-    "enter_password_placeholder": "Enter password"
+    "enter_password_placeholder": "Enter password",
+    "support_messages": "Support Messages",
+    "loading_messages": "Loading messages...",
+    "no_messages": "No support messages found.",
+    "your_message": "Your message:",
+    "admin_reply": "Admin Reply"
   },
   "hero": {
     "premium_badge": "Premium Beauty Collection",
@@ -388,6 +392,7 @@
       "mark_paid": "Mark as Paid",
       "mark_undelivered": "Mark as Undelivered",
       "mark_delivered": "Mark as Delivered",
+      "mark_shipped": "Mark as Shipped",
       "order": "Order",
       "customer_label": "Customer",
       "customer": "Customer",
@@ -399,7 +404,9 @@
       "status": {
         "paid": "Paid",
         "unpaid": "Unpaid",
+        "shipped": "Shipped",
         "delivered": "Delivered",
+        "pending": "Pending",
         "processing": "Processing"
       },
       "table": {

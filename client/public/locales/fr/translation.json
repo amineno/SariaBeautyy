@@ -62,7 +62,12 @@
     "each": "chacun",
     "name_placeholder": "Entrez le nom",
     "email_placeholder": "Entrez l'email",
-    "enter_password_placeholder": "Entrez le mot de passe"
+    "enter_password_placeholder": "Entrez le mot de passe",
+    "support_messages": "Messages de Support",
+    "loading_messages": "Chargement des messages...",
+    "no_messages": "Aucun message de support trouvé.",
+    "your_message": "Votre message :",
+    "admin_reply": "Réponse de l'Admin"
   },
   "hero": {
     "premium_badge": "Collection Beauté Premium",
@@ -388,6 +393,7 @@
       "mark_paid": "Marquer comme payé",
       "mark_undelivered": "Marquer comme non livré",
       "mark_delivered": "Marquer comme livré",
+      "mark_shipped": "Marquer comme expédié",
       "customer": "Client",
       "customer_label": "Client",
       "guest": "Invité",
@@ -398,8 +404,16 @@
       "status": {
         "paid": "Payé",
         "unpaid": "Non payé",
+        "shipped": "Expédié",
         "delivered": "Livré",
+        "pending": "En attente",
         "processing": "En traitement"
+      },
+      "table": {
+        "order": "Commande",
+        "customer": "Client",
+        "shipping": "Livraison",
+        "payment": "Paiement"
       }
     },
     "users": {
