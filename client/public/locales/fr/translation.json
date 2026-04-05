@@ -564,6 +564,32 @@
     },
     "success": {
       "order_placed": "Commande passée avec succès !"
+    },
+    "form": {
+      "full_name": "Nom complet",
+      "phone": "Téléphone",
+      "address_line1": "Adresse (ligne 1)",
+      "address_line2": "Adresse (ligne 2) (optionnel)",
+      "city": "Ville",
+      "postal_code": "Code postal",
+      "country": "Pays",
+      "country_help": "Code à 2 lettres (ex: TN, US, FR)",
+      "country_placeholder": "TN",
+      "qty": "Qté",
+      "errors": {
+        "stripe_not_configured": "Stripe n'est pas configuré",
+        "name_required": "Le nom est obligatoire",
+        "phone_required": "Le numéro de téléphone est obligatoire",
+        "address_required": "L'adresse est obligatoire",
+        "city_required": "La ville est obligatoire",
+        "postal_code_required": "Le code postal est obligatoire",
+        "country_code_required": "Le pays doit être un code à 2 lettres (ex: TN, US, FR)",
+        "payment_failed": "Le paiement a échoué",
+        "payment_not_completed": "Paiement non terminé"
+      },
+      "success": {
+        "payment_successful": "Paiement réussi"
+      }
     }
   }
 }

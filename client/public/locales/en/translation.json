@@ -580,6 +580,32 @@
     },
     "success": {
       "order_placed": "Order placed successfully!"
+    },
+    "form": {
+      "full_name": "Full name",
+      "phone": "Phone",
+      "address_line1": "Address line 1",
+      "address_line2": "Address line 2 (optional)",
+      "city": "City",
+      "postal_code": "Postal code",
+      "country": "Country",
+      "country_help": "2-letter code (e.g. TN, US, FR)",
+      "country_placeholder": "TN",
+      "qty": "Qty",
+      "errors": {
+        "stripe_not_configured": "Stripe is not configured",
+        "name_required": "Name is required",
+        "phone_required": "Phone number is required",
+        "address_required": "Address is required",
+        "city_required": "City is required",
+        "postal_code_required": "Postal code is required",
+        "country_code_required": "Country must be a 2-letter code (e.g. TN, US, FR)",
+        "payment_failed": "Payment failed",
+        "payment_not_completed": "Payment not completed"
+      },
+      "success": {
+        "payment_successful": "Payment successful"
+      }
     }
   }
 }

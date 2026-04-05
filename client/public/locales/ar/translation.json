@@ -579,6 +579,32 @@
     },
     "success": {
       "order_placed": "تم الطلب بنجاح!"
+    },
+    "form": {
+      "full_name": "الاسم الكامل",
+      "phone": "رقم الهاتف",
+      "address_line1": "العنوان (سطر 1)",
+      "address_line2": "العنوان (سطر 2) (اختياري)",
+      "city": "المدينة",
+      "postal_code": "الرمز البريدي",
+      "country": "البلد",
+      "country_help": "رمز من حرفين (مثل TN, US, FR)",
+      "country_placeholder": "TN",
+      "qty": "الكمية",
+      "errors": {
+        "stripe_not_configured": "Stripe غير مهيأ",
+        "name_required": "الاسم مطلوب",
+        "phone_required": "رقم الهاتف مطلوب",
+        "address_required": "العنوان مطلوب",
+        "city_required": "المدينة مطلوبة",
+        "postal_code_required": "الرمز البريدي مطلوب",
+        "country_code_required": "يجب أن يكون البلد رمزًا من حرفين (مثل TN, US, FR)",
+        "payment_failed": "فشل الدفع",
+        "payment_not_completed": "لم يكتمل الدفع"
+      },
+      "success": {
+        "payment_successful": "تم الدفع بنجاح"
+      }
     }
   }
 }

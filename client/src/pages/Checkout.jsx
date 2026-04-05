@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { useCart } from '../hooks/useCart';
@@ -11,6 +12,7 @@ const stripePublishableKey = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY 
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState('');
@@ -39,7 +41,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
       } catch (e) {
         if (!isActive) return;
         setClientSecret('');
-        toast.error(e.response?.data?.message || e.response?.data?.error || 'Payment initialization failed');
+        toast.error(e.response?.data?.message || e.response?.data?.error || t('checkout.errors.payment_init_failed'));
       } finally {
         if (isActive) setIsLoading(false);
       }
@@ -49,7 +51,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
     return () => {
       isActive = false;
     };
-  }, [amountCents, currency]);
+  }, [amountCents, currency, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,27 +59,27 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
 
     const normalizedCountry = String(country || '').trim().toUpperCase();
     if (!fullName.trim()) {
-      toast.error('Name is required');
+      toast.error(t('checkout.form.errors.name_required'));
       return;
     }
     if (!phone.trim()) {
-      toast.error('Phone number is required');
+      toast.error(t('checkout.form.errors.phone_required'));
       return;
     }
     if (!addressLine1.trim()) {
-      toast.error('Address is required');
+      toast.error(t('checkout.form.errors.address_required'));
       return;
     }
     if (!city.trim()) {
-      toast.error('City is required');
+      toast.error(t('checkout.form.errors.city_required'));
       return;
     }
     if (!postalCode.trim()) {
-      toast.error('Postal code is required');
+      toast.error(t('checkout.form.errors.postal_code_required'));
       return;
     }
     if (normalizedCountry.length !== 2) {
-      toast.error('Country must be a 2-letter code (e.g. TN, US, FR)');
+      toast.error(t('checkout.form.errors.country_code_required'));
       return;
     }
 
@@ -112,15 +114,15 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
       });
 
       if (result.error) {
-        toast.error(result.error.message || 'Payment failed');
+        toast.error(result.error.message || t('checkout.form.errors.payment_failed'));
         return;
       }
 
       if (result.paymentIntent?.status === 'succeeded') {
-        toast.success('Payment successful');
+        toast.success(t('checkout.form.success.payment_successful'));
         if (typeof onSuccess === 'function') onSuccess(result.paymentIntent);
       } else {
-        toast.error('Payment not completed');
+        toast.error(t('checkout.form.errors.payment_not_completed'));
       }
     } finally {
       setIsLoading(false);
@@ -133,7 +135,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Full name
+              {t('checkout.form.full_name')}
             </label>
             <input
               value={fullName}
@@ -144,7 +146,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
           </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Phone
+              {t('checkout.form.phone')}
             </label>
             <input
               value={phone}
@@ -157,7 +159,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Address line 1
+            {t('checkout.form.address_line1')}
           </label>
           <input
             value={addressLine1}
@@ -169,7 +171,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Address line 2 (optional)
+            {t('checkout.form.address_line2')}
           </label>
           <input
             value={addressLine2}
@@ -182,7 +184,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              City
+              {t('checkout.form.city')}
             </label>
             <input
               value={city}
@@ -193,7 +195,7 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
           </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Postal code
+              {t('checkout.form.postal_code')}
             </label>
             <input
               value={postalCode}
@@ -204,15 +206,18 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
           </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Country (2 letters)
+              {t('checkout.form.country')}
             </label>
             <input
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
               autoComplete="country"
-              placeholder="TN"
+              placeholder={t('checkout.form.country_placeholder')}
             />
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {t('checkout.form.country_help')}
+            </div>
           </div>
         </div>
       </div>
@@ -225,13 +230,14 @@ const CheckoutForm = ({ amountCents, currency, onSuccess }) => {
         disabled={!stripe || !clientSecret || isLoading}
         className="btn btn-primary w-full flex justify-center items-center"
       >
-        {isLoading ? 'Processing…' : 'Pay'}
+        {isLoading ? t('checkout.payment.processing') : t('checkout.payment.pay_now')}
       </button>
     </form>
   );
 };
 
 const Checkout = () => {
+  const { t } = useTranslation();
   const { cartItems, clearCart } = useCart();
   const { formatPrice } = useCurrency();
   const currency = 'usd';
@@ -257,7 +263,7 @@ const Checkout = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-xl mx-auto card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl">
           <div className="text-red-600 dark:text-red-400 text-sm">
-            Stripe is not configured (missing VITE_STRIPE_PUBLISHABLE_KEY)
+            {t('checkout.form.errors.stripe_not_configured')}
           </div>
         </div>
       </div>
@@ -269,13 +275,13 @@ const Checkout = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-xl mx-auto card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-4">
           <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
-            Checkout
+            {t('checkout.title')}
           </h1>
           <div className="text-gray-600 dark:text-gray-300">
-            Your cart is empty.
+            {t('cart.empty.message')}
           </div>
           <Link to="/shop" className="btn btn-primary w-full">
-            Go to shop
+            {t('cart.empty.action')}
           </Link>
         </div>
       </div>
@@ -287,7 +293,7 @@ const Checkout = () => {
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6">
           <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
-            Checkout
+            {t('checkout.title')}
           </h1>
 
           <Elements stripe={stripePromise}>
@@ -303,7 +309,7 @@ const Checkout = () => {
 
         <div className="card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6">
           <h2 className="text-xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
-            Order summary
+            {t('cart.summary.title')}
           </h2>
 
           <div className="space-y-4">
@@ -322,7 +328,7 @@ const Checkout = () => {
                       {item.name}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      Qty: {item.qty}
+                      {t('checkout.form.qty')}: {item.qty}
                     </div>
                   </div>
                 </div>
@@ -335,15 +341,15 @@ const Checkout = () => {
 
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
             <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-              <span>Subtotal</span>
+              <span>{t('cart.summary.subtotal')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-              <span>Shipping</span>
-              <span>{formatPrice(0)}</span>
+              <span>{t('cart.summary.shipping')}</span>
+              <span>{t('cart.summary.free')}</span>
             </div>
             <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
-              <span>Total</span>
+              <span>{t('cart.summary.total')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
           </div>
