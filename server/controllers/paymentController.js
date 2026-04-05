@@ -44,7 +44,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     if (stripeType === 'StripeInvalidRequestError') {
       res.status(400);
     } else if (stripeType === 'StripeAuthenticationError') {
-      res.status(503);
+      res.status(502);
     } else if (stripeType) {
       res.status(502);
     } else {
