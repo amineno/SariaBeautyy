@@ -12,6 +12,13 @@ const CheckoutForm = ({ amountCents, currency }) => {
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
 
   useEffect(() => {
     let isActive = true;
@@ -45,11 +52,59 @@ const CheckoutForm = ({ amountCents, currency }) => {
     e.preventDefault();
     if (!stripe || !elements || !clientSecret) return;
 
+    const normalizedCountry = String(country || '').trim().toUpperCase();
+    if (!fullName.trim()) {
+      toast.error('Name is required');
+      return;
+    }
+    if (!phone.trim()) {
+      toast.error('Phone number is required');
+      return;
+    }
+    if (!addressLine1.trim()) {
+      toast.error('Address is required');
+      return;
+    }
+    if (!city.trim()) {
+      toast.error('City is required');
+      return;
+    }
+    if (!postalCode.trim()) {
+      toast.error('Postal code is required');
+      return;
+    }
+    if (normalizedCountry.length !== 2) {
+      toast.error('Country must be a 2-letter code (e.g. TN, US, FR)');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
+          billing_details: {
+            name: fullName.trim(),
+            phone: phone.trim(),
+            address: {
+              line1: addressLine1.trim(),
+              line2: addressLine2.trim() || undefined,
+              city: city.trim(),
+              postal_code: postalCode.trim(),
+              country: normalizedCountry,
+            },
+          },
+        },
+        shipping: {
+          name: fullName.trim(),
+          phone: phone.trim(),
+          address: {
+            line1: addressLine1.trim(),
+            line2: addressLine2.trim() || undefined,
+            city: city.trim(),
+            postal_code: postalCode.trim(),
+            country: normalizedCountry,
+          },
         },
       });
 
@@ -70,6 +125,94 @@ const CheckoutForm = ({ amountCents, currency }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Full name
+            </label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="name"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Phone
+            </label>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="tel"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Address line 1
+          </label>
+          <input
+            value={addressLine1}
+            onChange={(e) => setAddressLine1(e.target.value)}
+            className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+            autoComplete="address-line1"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Address line 2 (optional)
+          </label>
+          <input
+            value={addressLine2}
+            onChange={(e) => setAddressLine2(e.target.value)}
+            className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+            autoComplete="address-line2"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              City
+            </label>
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="address-level2"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Postal code
+            </label>
+            <input
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="postal-code"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Country (2 letters)
+            </label>
+            <input
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="input w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-300"
+              autoComplete="country"
+              placeholder="TN"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="card p-5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 rounded-xl">
         <CardElement options={{ hidePostalCode: true }} />
       </div>
