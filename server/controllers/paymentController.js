@@ -90,7 +90,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
   if (order.stripePaymentIntentId) {
     try {
       paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
-    } catch {
+    } catch (err) {
       paymentIntent = null;
     }
   }
@@ -109,17 +109,31 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     (typeof existingCurrency === 'string' && existingCurrency.toLowerCase() !== currency);
 
   if (shouldCreateNewIntent) {
-    paymentIntent = await stripe.paymentIntents.create(
-      {
-        amount: amountInCents,
-        currency,
-        automatic_payment_methods: {
-          enabled: true,
+    try {
+      paymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: amountInCents,
+          currency,
+          automatic_payment_methods: {
+            enabled: true,
+          },
+          metadata: { orderId: String(order._id) },
         },
-        metadata: { orderId: String(order._id) },
-      },
-      { idempotencyKey: `order_${order._id}_${amountInCents}` }
-    );
+        { idempotencyKey: `order_${order._id}_${amountInCents}` }
+      );
+    } catch (err) {
+      const stripeType = err?.type;
+      if (stripeType === 'StripeInvalidRequestError') {
+        res.status(400);
+      } else if (stripeType === 'StripeAuthenticationError') {
+        res.status(503);
+      } else if (stripeType) {
+        res.status(502);
+      } else {
+        res.status(500);
+      }
+      throw new Error(err?.message || 'Stripe payment initialization failed');
+    }
 
     order.stripePaymentIntentId = paymentIntent.id;
     order.paymentProvider = 'Stripe';
