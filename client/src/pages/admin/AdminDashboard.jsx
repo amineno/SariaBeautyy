@@ -41,7 +41,6 @@ const AdminDashboard = () => {
     return 'products';
   });
   const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -53,7 +52,7 @@ const AdminDashboard = () => {
     countInStock: '', nameFr: '', descFr: '', nameAr: '', descAr: '' 
   });
   const [editingId, setEditingId] = useState(null);
-  const [stats, setStats] = useState({ totalSales: 0, orders: 0, products: 0, customers: 0 });
+  const [stats, setStats] = useState({ totalSales: 0, products: 0, customers: 0 });
   const [categories, setCategories] = useState([]);
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
@@ -97,9 +96,8 @@ const AdminDashboard = () => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [pRes, oRes, uRes, sRes, cRes, mRes, aRes] = await Promise.all([
+        const [pRes, uRes, sRes, cRes, mRes, aRes] = await Promise.all([
           api.get('/products', authHeader),
-          api.get('/orders/all', authHeader),
           api.get('/users', authHeader),
           api.get('/admin/stats', authHeader),
           api.get('/products/categories/list', authHeader),
@@ -115,7 +113,6 @@ const AdminDashboard = () => {
           productImage: p.image
         }))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
         setReviews(rv);
-        setOrders(oRes.data || []);
         setUsers(uRes.data || []);
         setStats(s => sRes.data || s);
         setCategories(cRes.data || []);
@@ -138,12 +135,7 @@ const AdminDashboard = () => {
       try {
         const payload = JSON.parse(ev.data);
 
-        if (payload.channel === 'order' && payload.type === 'order_created') {
-          setOrders(prev => [payload.order, ...prev]);
-          toast.success(t('admin.toast.new_order', { amount: payload.order.totalPrice }), { icon: '🛍️' });
-        } else if (payload.channel === 'order' && payload.type === 'order_updated') {
-          setOrders(prev => prev.map(o => o._id === payload.order._id ? payload.order : o));
-        } else if (payload.channel === 'product' && payload.type === 'product_created') {
+        if (payload.channel === 'product' && payload.type === 'product_created') {
           setProducts(prev => [payload.product, ...prev]);
         } else if (payload.channel === 'product' && payload.type === 'product_updated') {
           setProducts(prev => {
@@ -305,17 +297,6 @@ const AdminDashboard = () => {
     });
   };
 
-  const updateOrderStatus = async (id, updates) => {
-    try {
-      const { data } = await api.put(`/orders/${id}/status`, updates, authHeader);
-      setOrders(prev => prev.map(o => o._id === id ? data : o));
-      toast.success(t('admin.orders.status_update_success'));
-    } catch (e) {
-      toast.error(e.response?.data?.message || t('admin.orders.status_update_error'));
-      console.error('Update order status failed', e);
-    }
-  };
-
   const deleteUser = (id) => {
     setConfirmModal({
       isOpen: true,
@@ -370,7 +351,6 @@ const AdminDashboard = () => {
   const sidebarItems = [
     { id: 'stats', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard },
     { id: 'products', label: t('admin.sidebar.products'), icon: Package },
-    { id: 'orders', label: t('admin.sidebar.orders'), icon: ShoppingCart },
     { id: 'users', label: t('admin.sidebar.users'), icon: Users },
     { id: 'reviews', label: t('admin.sidebar.reviews'), icon: Star },
     { id: 'messages', label: t('admin.sidebar.messages'), icon: Zap },
@@ -780,7 +760,6 @@ const AdminDashboard = () => {
                     color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
                     change: salesChangePercent 
                   },
-                  { label: t('admin.stats.total_orders'), value: stats.orders, icon: ShoppingCart, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' },
                   { label: t('admin.stats.products'), value: stats.products, icon: Box, color: 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400' },
                   { label: t('admin.stats.customers'), value: stats.customers, icon: UserCheck, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' },
                 ].map((stat, i) => (
@@ -1044,107 +1023,6 @@ const AdminDashboard = () => {
                   </table>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Orders View */}
-          {activeTab === 'orders' && (
-            <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
-              {orders.map((o) => (
-                <div key={o._id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl">
-                        <ShoppingCart className="w-6 h-6 text-gray-400 dark:text-gray-300" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-gray-900 dark:text-white">{t('admin.orders.order')} #{o._id.slice(-8).toUpperCase()}</p>
-                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                            o.isPaid ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                          }`}>
-                            {o.isPaid ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                            o.isDelivered ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                          }`}>
-                            {o.isDelivered ? t('admin.orders.status.delivered') : t('admin.orders.status.processing')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                          {t('admin.orders.customer_label')}: <span className="text-gray-900 dark:text-white font-medium">{o.user?.name || t('admin.orders.guest')}</span> • {o.user?.email || t('admin.orders.no_email')} • {new Date(o.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-primary">{formatPrice(o.totalPrice)}</p>
-                      <p className="text-xs text-gray-400">{o.orderItems?.length || 0} {t('admin.orders.items')}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('admin.orders.customer')}</p>
-                      <p className="text-sm text-gray-900 dark:text-white">
-                        {(o.user?.name || t('admin.orders.guest'))} • {(o.user?.email || t('admin.orders.no_email'))}
-                      </p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('admin.orders.shipping')}</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        {(o.shippingAddress?.address || '')}
-                        {o.shippingAddress?.city ? `, ${o.shippingAddress.city}` : ''}
-                        {o.shippingAddress?.postalCode ? ` ${o.shippingAddress.postalCode}` : ''}
-                        {o.shippingAddress?.country ? `, ${o.shippingAddress.country}` : ''}
-                      </p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 md:col-span-2">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('admin.orders.payment')}</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        {(o.paymentMethod || t('admin.common.unknown'))}
-                        {o.paymentResult?.email_address ? ` • ${o.paymentResult.email_address}` : ''}
-                      </p>
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600 dark:text-gray-400">
-                        <p>
-                          <span className="font-semibold">Gateway:</span>{' '}
-                          {o.paymentProvider || t('common.unknown')}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Status:</span>{' '}
-                          {o.paymentResult?.status || t('common.unknown')}
-                        </p>
-                        <p className="break-all">
-                          <span className="font-semibold">Transaction ID:</span>{' '}
-                          {o.paymentResult?.id || t('common.unknown')}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Paid at:</span>{' '}
-                          {o.isPaid && o.paidAt
-                            ? new Date(o.paidAt).toLocaleString()
-                            : t('common.unknown')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 pt-4 border-t border-gray-50 dark:border-gray-700">
-                    <button 
-                      onClick={() => updateOrderStatus(o._id, { isPaid: !o.isPaid })}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                        o.isPaid ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                      }`}
-                    >
-                      {o.isPaid ? t('admin.orders.mark_unpaid') : t('admin.orders.mark_paid')}
-                    </button>
-                    <button 
-                      onClick={() => updateOrderStatus(o._id, { isDelivered: !o.isDelivered })}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                        o.isDelivered ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                      }`}
-                    >
-                      {o.isDelivered ? t('admin.orders.mark_undelivered') : t('admin.orders.mark_delivered')}
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           )}
 

@@ -1,5 +1,4 @@
 const Product = require('../models/Product');
-const Order = require('../models/Order');
 const User = require('../models/User');
 const { broadcastEvent } = require('../utils/sse');
 const OpenAI = require('openai');
@@ -194,32 +193,6 @@ const getChatResponse = async (req, res) => {
       }
     }
 
-    // Smart product recommendations based on user history if no specific search or no results
-    if ((!prods || prods.length === 0) && userId) {
-      try {
-        const userOrders = await Order.find({ user: userId, isPaid: true }).populate('orderItems.product');
-        const purchasedCategories = userOrders.flatMap(order => 
-          order.orderItems.map(item => item.product.category)
-        );
-        
-        if (purchasedCategories.length > 0) {
-          // Recommend products from similar categories
-          const categoryCounts = purchasedCategories.reduce((acc, cat) => {
-            acc[cat] = (acc[cat] || 0) + 1;
-            return acc;
-          }, {});
-          
-          const topCategory = Object.entries(categoryCounts).sort(([,a], [,b]) => b - a)[0]?.[0];
-          if (topCategory) {
-            prods = await Product.find({ category: topCategory }).sort({ rating: -1 }).limit(3);
-            if (msgKey !== 'products_not_found') msgKey = 'products'; // Reset key if we found history-based recs
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user preferences:', error);
-      }
-    }
-    
     // Fallback to top-rated products
     if (!prods || prods.length === 0) {
       prods = await Product.find({}).sort({ rating: -1 }).limit(3);
@@ -234,25 +207,8 @@ const getChatResponse = async (req, res) => {
     context.lastTopic = 'products';
   }
   
-  // Enhanced order tracking
   else if (lowerMsg.includes('order') || lowerMsg.includes('commande') || lowerMsg.includes('طلب') || lowerMsg.includes('track') || lowerMsg.includes('status')) {
-    if (userId) {
-      try {
-        const recentOrders = await Order.find({ user: userId }).sort({ createdAt: -1 }).limit(3);
-        if (recentOrders.length > 0) {
-          const orderList = recentOrders.map(order => 
-            `Order #${order._id.toString().slice(-6)} - ${order.isPaid ? 'Paid' : 'Pending'} - ${order.isDelivered ? 'Delivered' : 'In Transit'}`
-          ).join('\n');
-          reply = t(lang, 'orders_list', { list: orderList });
-        } else {
-          reply = t(lang, 'orders_empty');
-        }
-      } catch (error) {
-        reply = t(lang, 'navigate');
-      }
-    } else {
-      reply = t(lang, 'login_to_track');
-    }
+    reply = t(lang, 'navigate');
     context.lastTopic = 'orders';
   }
   

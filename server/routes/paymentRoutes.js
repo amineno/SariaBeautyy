@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {
-  createPaymentIntent,
-  sendStripeApiKey,
-  verifyPayPalPayment,
-} = require('../controllers/paymentController');
-const { protect } = require('../middleware/authMiddleware');
+const { createPaymentIntent } = require('../controllers/paymentController');
 
-router.route('/config').get(sendStripeApiKey);
-router.route('/create-payment-intent').post(protect, createPaymentIntent);
-router.route('/paypal/verify').post(protect, verifyPayPalPayment);
+router.post('/create-payment-intent', createPaymentIntent);
 
 module.exports = router;

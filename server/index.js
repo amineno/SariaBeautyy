@@ -14,18 +14,16 @@ const PageContent = require('./models/PageContent');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
-const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const pageRoutes = require('./routes/pageRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-const { stripeWebhook } = require('./controllers/paymentController');
 
 connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 // Global Rate Limiting
 const globalLimiter = rateLimit({
@@ -96,11 +94,6 @@ const createPaymentLimiter = rateLimit({
   max: 20,
 });
 
-const webhookLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 60,
-});
-
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(
@@ -131,13 +124,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.post(
-  '/api/payment/webhook',
-  webhookLimiter,
-  express.raw({ type: 'application/json' }),
-  stripeWebhook
-);
-
 app.use(express.json({ limit: '20mb' }));
 
 app.get('/', (req, res) => {
@@ -153,13 +139,11 @@ app.get('/api/config/public', (req, res) => {
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/payment/create-payment-intent', createPaymentLimiter);
-app.use('/api/payment/paypal/verify', createPaymentLimiter);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/uploads', require('./routes/uploadRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
