@@ -31,6 +31,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPayPalReady, setIsPayPalReady] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const [stripeConfigError, setStripeConfigError] = useState('');
+  const [isStripeConfigLoading, setIsStripeConfigLoading] = useState(true);
 
   const resolveImage = (img) => {
     if (!img) return '';
@@ -49,8 +51,28 @@ const Checkout = () => {
 
     // Load Stripe key
     const getStripeKey = async () => {
-      const { data } = await api.get('/payment/config');
-      setStripePromise(loadStripe(data.publishableKey));
+      setIsStripeConfigLoading(true);
+      setStripeConfigError('');
+      try {
+        const { data } = await api.get('/payment/config');
+        const publishableKey = String(data?.publishableKey || '').trim();
+        if (!publishableKey) {
+          setStripePromise(null);
+          setStripeConfigError('Stripe is not configured');
+          return;
+        }
+        if (!publishableKey.startsWith('pk_')) {
+          setStripePromise(null);
+          setStripeConfigError('Invalid Stripe publishable key configuration');
+          return;
+        }
+        setStripePromise(loadStripe(publishableKey));
+      } catch (error) {
+        setStripePromise(null);
+        setStripeConfigError(error.response?.data?.message || 'Stripe is not configured');
+      } finally {
+        setIsStripeConfigLoading(false);
+      }
     };
     getStripeKey();
   }, [user, cartItems, navigate]);
@@ -331,7 +353,15 @@ const Checkout = () => {
               <form onSubmit={submitPaymentHandler} className="space-y-6">
                 <h2 className="text-2xl font-serif text-gray-800 dark:text-white mb-6 flex items-center transition-colors duration-300"><CreditCard className="mr-3" /> {t('checkout.payment.title')}</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer" onClick={() => { setPaymentMethod('Stripe'); setActiveStep(3); }}>
+                  <div
+                    className={`flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-xl transition-colors ${
+                      stripeConfigError ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer'
+                    }`}
+                    onClick={() => {
+                      if (stripeConfigError) return;
+                      setPaymentMethod('Stripe');
+                    }}
+                  >
                     <input
                       type="radio"
                       id="stripe"
@@ -339,9 +369,10 @@ const Checkout = () => {
                       value="Stripe"
                       checked={paymentMethod === 'Stripe'}
                       onChange={(e) => {
+                        if (stripeConfigError) return;
                         setPaymentMethod(e.target.value);
-                        setActiveStep(3);
                       }}
+                      disabled={Boolean(stripeConfigError)}
                       className="h-5 w-5 text-primary focus:ring-primary border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     />
                     <label htmlFor="stripe" className="ml-3 block text-base font-medium text-gray-700 dark:text-gray-200 cursor-pointer w-full">
@@ -375,6 +406,11 @@ const Checkout = () => {
                     {t('checkout.payment.continue_btn')}
                   </button>
                 </div>
+                {stripeConfigError && !isStripeConfigLoading && (
+                  <div className="text-sm text-red-600 dark:text-red-400">
+                    {stripeConfigError}
+                  </div>
+                )}
               </form>
             )}
 
@@ -423,7 +459,11 @@ const Checkout = () => {
                     <ChevronLeft className="mr-2" size={20} /> {t('checkout.review.back_btn')}
                   </button>
                   {paymentMethod === 'Stripe' && (
-                    clientSecret && stripePromise ? (
+                    stripeConfigError && !isStripeConfigLoading ? (
+                      <div className="w-full text-center py-4 text-sm text-red-600 dark:text-red-400">
+                        {stripeConfigError}
+                      </div>
+                    ) : clientSecret && stripePromise ? (
                       <div className="w-full">
                         <Elements stripe={stripePromise} options={{ clientSecret }}>
                           <StripePaymentForm 
