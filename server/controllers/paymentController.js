@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Stripe = require('stripe');
 const https = require('https');
 const Order = require('../models/Order');
@@ -43,94 +44,94 @@ const sendStripeApiKey = asyncHandler(async (req, res) => {
 // @route   POST /api/payment/create-payment-intent
 // @access  Private
 const createPaymentIntent = asyncHandler(async (req, res) => {
-  console.log('create-payment-intent req.body:', req.body);
   const stripe = getStripeClient();
   if (!stripe) {
     res.status(503);
     throw new Error('Stripe is not configured');
   }
 
-  const amount = Number(req.body?.amount);
-  const orderId = req.body?.orderId;
-  const currency = 'usd';
-
-  if (!Number.isFinite(amount) || amount <= 0) {
+  const orderId = String(req.body?.orderId || '').trim();
+  if (!orderId) {
     res.status(400);
-    throw new Error('Amount is required and must be a positive number');
+    throw new Error('Order ID is required');
   }
 
-  const amountInCents = Math.round(amount);
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    res.status(400);
+    throw new Error('Invalid order ID');
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+
+  if (!order.user.equals(req.user._id)) {
+    res.status(403);
+    throw new Error('Not authorized to pay for this order');
+  }
+
+  if (order.isPaid) {
+    res.status(400);
+    throw new Error('Order is already paid');
+  }
+
+  const currency = 'usd';
+  const amountInCents = Math.round(Number(order.totalPrice || 0) * 100);
   if (!Number.isInteger(amountInCents) || amountInCents <= 0) {
     res.status(400);
-    throw new Error('Amount must be an integer in cents');
+    throw new Error('Invalid order total');
   }
 
-  try {
-    let order = null;
+  let paymentIntent = null;
 
-    if (orderId) {
-      order = await Order.findById(orderId);
-
-      if (!order) {
-        res.status(404);
-        throw new Error('Order not found');
-      }
-
-      if (!order.user.equals(req.user._id)) {
-        res.status(403);
-        throw new Error('Not authorized to pay for this order');
-      }
-
-      if (order.isPaid) {
-        res.status(400);
-        throw new Error('Order is already paid');
-      }
-
-      const expectedAmountInCents = Math.round(Number(order.totalPrice || 0) * 100);
-      if (expectedAmountInCents > 0 && expectedAmountInCents !== amountInCents) {
-        res.status(400);
-        throw new Error('Amount mismatch');
-      }
-    }
-
-    let paymentIntent;
-
-    if (order && order.stripePaymentIntentId) {
+  if (order.stripePaymentIntentId) {
+    try {
       paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
+    } catch {
+      paymentIntent = null;
     }
-
-    if (!paymentIntent || paymentIntent.status === 'canceled') {
-      paymentIntent = await stripe.paymentIntents.create(
-        {
-          amount: amountInCents,
-          currency,
-          automatic_payment_methods: {
-            enabled: true,
-          },
-          metadata: order ? { orderId: String(order._id) } : undefined,
-        },
-        order ? { idempotencyKey: `order_${order._id}` } : undefined
-      );
-
-      if (order) {
-        order.stripePaymentIntentId = paymentIntent.id;
-        order.paymentProvider = 'Stripe';
-        await order.save();
-      }
-    } else if (paymentIntent.status === 'succeeded') {
-      res.status(400);
-      throw new Error('Payment already succeeded for this order');
-    }
-
-    res.send({
-      clientSecret: paymentIntent.client_secret,
-    });
-  } catch (error) {
-    console.log(error.message);
-    console.error('Stripe Error:', error);
-    res.status(400);
-    throw new Error(error.message);
   }
+
+  if (paymentIntent && paymentIntent.status === 'succeeded') {
+    res.status(400);
+    throw new Error('Payment already succeeded for this order');
+  }
+
+  const existingAmount = paymentIntent?.amount;
+  const existingCurrency = paymentIntent?.currency;
+  const shouldCreateNewIntent =
+    !paymentIntent ||
+    paymentIntent.status === 'canceled' ||
+    (typeof existingAmount === 'number' && existingAmount !== amountInCents) ||
+    (typeof existingCurrency === 'string' && existingCurrency.toLowerCase() !== currency);
+
+  if (shouldCreateNewIntent) {
+    paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: amountInCents,
+        currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: { orderId: String(order._id) },
+      },
+      { idempotencyKey: `order_${order._id}_${amountInCents}` }
+    );
+
+    order.stripePaymentIntentId = paymentIntent.id;
+    order.paymentProvider = 'Stripe';
+    await order.save();
+  }
+
+  res.json({
+    clientSecret: paymentIntent.client_secret,
+    amount: amountInCents,
+    currency,
+    orderId: String(order._id),
+  });
 });
 
 const getPayPalBaseUrl = () => {
