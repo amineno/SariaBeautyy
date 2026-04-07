@@ -10,6 +10,12 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../hooks/useAuth';
 
 const stripePublicKey = String(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '').trim();
+
+if (!stripePublicKey) {
+  console.error('[Stripe] VITE_STRIPE_PUBLIC_KEY is missing. Payment system will not work.');
+}
+
+// Initialize stripePromise outside the component to avoid re-creations
 const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 const CheckoutForm = ({ cartItems, payLabel, onSuccess }) => {
@@ -34,19 +40,35 @@ const CheckoutForm = ({ cartItems, payLabel, onSuccess }) => {
 
     const init = async () => {
       if (!cartItems || cartItems.length === 0) return;
+      
+      // If no stripePromise, don't even try
+      if (!stripePromise) {
+        setErrorMessage(t('checkout.form.errors.stripe_not_configured'));
+        return;
+      }
+
       setIsLoading(true);
       setErrorMessage('');
       try {
+        console.log('[Stripe] Initializing PaymentIntent...');
         // Amount is now securely calculated on the backend
         const { data } = await api.post('/payment/create-payment-intent', {
           items: cartItems,
         });
+        
         if (!isActive) return;
-        setClientSecret(String(data?.clientSecret || ''));
+        
+        if (data?.clientSecret) {
+          console.log('[Stripe] PaymentIntent initialized successfully');
+          setClientSecret(String(data.clientSecret));
+        } else {
+          throw new Error('No client secret returned from server');
+        }
       } catch (e) {
         if (!isActive) return;
         setClientSecret('');
-        const msg = e.response?.data?.message || e.response?.data?.error || t('checkout.errors.payment_init_failed');
+        const msg = e.response?.data?.message || e.response?.data?.error || e.message || t('checkout.errors.payment_init_failed');
+        console.error('[Stripe] Initialization failed:', msg);
         setErrorMessage(String(msg || ''));
         toast.error(msg);
       } finally {

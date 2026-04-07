@@ -503,7 +503,10 @@
       "total_orders": "Total Orders",
       "products": "Products",
       "customers": "Customers",
-      "sales_performance": "Sales Performance"
+      "sales_performance": "Sales Performance",
+      "recent_orders": "Recent Orders",
+      "view_all": "View All",
+      "no_recent_orders": "No recent orders yet"
     },
     "toast": {
       "new_order": "New Order: ${{amount}}",

@@ -5,10 +5,11 @@ const { broadcastEvent } = require('../utils/sse');
 
 const getAdminStats = async (req, res) => {
   try {
-    const [products, customers, ordersData] = await Promise.all([
+    const [products, customers, ordersData, recentOrders] = await Promise.all([
       Product.countDocuments(),
       User.countDocuments(),
-      Order.find({ paymentStatus: 'paid' })
+      Order.find({ paymentStatus: 'paid' }),
+      Order.find({ paymentStatus: 'paid' }).sort({ createdAt: -1 }).limit(5).populate('user')
     ]);
 
     const totalOrders = ordersData.length;
@@ -37,7 +38,8 @@ const getAdminStats = async (req, res) => {
       orders: totalOrders,
       products,
       customers,
-      monthly: monthly.reverse()
+      monthly: monthly.reverse(),
+      recentOrders
     });
   } catch (e) {
     console.error('Stats error:', e);

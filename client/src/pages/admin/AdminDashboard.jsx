@@ -65,6 +65,7 @@ const AdminDashboard = () => {
     onConfirm: () => {},
     icon: null
   });
+  const [expandedOrders, setExpandedOrders] = useState({});
 
   const monthlyStats = stats.monthly || [];
   const lastMonth = monthlyStats.length > 0 ? monthlyStats[monthlyStats.length - 1] : null;
@@ -841,6 +842,54 @@ const AdminDashboard = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Recent Orders Side Widget */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5 text-primary" /> {t('admin.stats.recent_orders')}
+                    </h3>
+                    <button 
+                      onClick={() => setActiveTab('orders')}
+                      className="text-xs font-bold text-primary hover:underline"
+                    >
+                      {t('admin.stats.view_all')}
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {(stats.recentOrders || []).map((order) => (
+                      <div key={order._id} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-primary font-bold text-xs">
+                            {order.user?.name?.charAt(0).toUpperCase() || 'G'}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">
+                              {order.user?.name || t('admin.orders.guest')}
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              {new Date(order.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-gray-900 dark:text-white">{formatPrice(order.total)}</p>
+                          <span className={`text-[10px] font-bold uppercase ${
+                            order.status === 'delivered' ? 'text-emerald-500' : 'text-amber-500'
+                          }`}>
+                            {t(`admin.orders.status.${order.status}`)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    {(!stats.recentOrders || stats.recentOrders.length === 0) && (
+                      <div className="text-center py-8">
+                        <ShoppingCart className="w-8 h-8 text-gray-200 dark:text-gray-700 mx-auto mb-2" />
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('admin.stats.no_recent_orders')}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1058,56 +1107,97 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {orders.map((o) => (
-                      <tr key={o._id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white">#{o._id.slice(-6).toUpperCase()}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(o.createdAt).toLocaleDateString()}</div>
-                          <div className="text-xs font-medium text-primary mt-1">{o.items?.length || 0} {t('admin.orders.items')}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white">{o.user?.name || t('admin.orders.guest')}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{o.user?.email || t('admin.orders.no_email')}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white">{formatPrice(o.total)}</div>
-                          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase mt-1 ${
-                            o.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                          }`}>
-                            {o.paymentStatus === 'paid' ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                            o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 
-                            o.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 
-                            'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                          }`}>
-                            {o.status === 'delivered' ? t('admin.orders.status.delivered') : 
-                             o.status === 'shipped' ? t('admin.orders.status.shipped') : 
-                             t('admin.orders.status.pending')}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            {o.status === 'pending' && (
-                              <button 
-                                onClick={() => updateOrderStatus(o._id, 'shipped')}
-                                className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors"
-                              >
-                                {t('admin.orders.mark_shipped') || 'Mark Shipped'}
-                              </button>
-                            )}
-                            {o.status === 'shipped' && (
-                              <button 
-                                onClick={() => updateOrderStatus(o._id, 'delivered')}
-                                className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg transition-colors"
-                              >
-                                {t('admin.orders.mark_delivered')}
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
+                      <React.Fragment key={o._id}>
+                        <tr 
+                          className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                          onClick={() => setExpandedOrders(prev => ({ ...prev, [o._id]: !prev[o._id] }))}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+                              #{o._id.slice(-6).toUpperCase()}
+                              {expandedOrders[o._id] ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(o.createdAt).toLocaleDateString()}</div>
+                            <div className="text-xs font-medium text-primary mt-1">{o.items?.length || 0} {t('admin.orders.items')}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">{o.user?.name || t('admin.orders.guest')}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{o.user?.email || t('admin.orders.no_email')}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">{formatPrice(o.total)}</div>
+                            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase mt-1 ${
+                              o.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                            }`}>
+                              {o.paymentStatus === 'paid' ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
+                              o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 
+                              o.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 
+                              'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                            }`}>
+                              {o.status === 'delivered' ? t('admin.orders.status.delivered') : 
+                               o.status === 'shipped' ? t('admin.orders.status.shipped') : 
+                               t('admin.orders.status.pending')}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex justify-end gap-2" onClick={e => e.stopPropagation()}>
+                              {o.status === 'pending' && (
+                                <button 
+                                  onClick={() => updateOrderStatus(o._id, 'shipped')}
+                                  className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors"
+                                >
+                                  {t('admin.orders.mark_shipped') || 'Mark Shipped'}
+                                </button>
+                              )}
+                              {o.status === 'shipped' && (
+                                <button 
+                                  onClick={() => updateOrderStatus(o._id, 'delivered')}
+                                  className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg transition-colors"
+                                >
+                                  {t('admin.orders.mark_delivered')}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                        {expandedOrders[o._id] && (
+                          <tr className="bg-gray-50/50 dark:bg-gray-800/30 animate-in fade-in duration-300">
+                            <td colSpan="5" className="px-6 py-4">
+                              <div className="space-y-3">
+                                <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('profile.items')}</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  {o.items?.map((item, idx) => {
+                                    const lang = i18n.language || 'en';
+                                    const p = item.product || {};
+                                    const trans = (p.translations || {})[lang];
+                                    const name = trans?.name || p.name || t('common.unknown');
+                                    
+                                    return (
+                                      <div key={idx} className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                        <img 
+                                          src={resolveImage(p.image)} 
+                                          className="w-10 h-10 rounded-lg object-cover bg-gray-100 dark:bg-gray-700" 
+                                          alt={name} 
+                                        />
+                                        <div className="min-w-0">
+                                          <p className="text-xs font-bold text-gray-900 dark:text-white truncate">{name}</p>
+                                          <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                                            {item.quantity} x {formatPrice(item.price)}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>

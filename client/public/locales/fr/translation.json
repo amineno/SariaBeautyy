@@ -494,7 +494,10 @@
       "total_orders": "Commandes totales",
       "products": "Produits",
       "customers": "Clients",
-      "sales_performance": "Performance des ventes"
+      "sales_performance": "Performance des ventes",
+      "recent_orders": "Commandes Récentes",
+      "view_all": "Voir tout",
+      "no_recent_orders": "Aucune commande récente pour le moment"
     },
     "toast": {
       "new_order": "Nouvelle commande : {{amount}} $",

@@ -1,13 +1,25 @@
 const asyncHandler = require('express-async-handler');
 const Stripe = require('stripe');
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
+// Initialize stripe inside a getter to ensure env vars are loaded
+const getStripe = () => {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+  }
+  return new Stripe(secretKey);
+};
+
 const createPaymentIntent = asyncHandler(async (req, res) => {
-  if (!stripe) {
-    res.status(503);
-    throw new Error('Stripe is not configured');
+  let stripe;
+  try {
+    stripe = getStripe();
+  } catch (err) {
+    console.error('[Stripe Config Error]', err.message);
+    res.status(500).json({ message: 'Payment provider configuration error' });
+    return;
   }
 
   const { items } = req.body;
@@ -22,18 +34,19 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
   const safeItemsForMetadata = [];
 
   for (const item of items) {
+    const productId = item._id || item.productId;
     const qty = Number(item.qty || item.quantity);
     
     // Validate quantity: must be integer between 1 and 100
     if (!Number.isInteger(qty) || qty < 1 || qty > 100) {
       res.status(400);
-      throw new Error(`Invalid quantity for product ${item._id || item.productId}`);
+      throw new Error(`Invalid quantity for product ${productId}`);
     }
 
-    const product = await Product.findById(item._id || item.productId);
+    const product = await Product.findById(productId);
     if (!product) {
       res.status(404);
-      throw new Error(`Product not found: ${item.name || item._id}`);
+      throw new Error(`Product not found: ${productId}`);
     }
     
     if (product.price <= 0) {
@@ -42,6 +55,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     }
     
     // Amount in cents (backend price is USD)
+    // We use Math.round to avoid floating point issues
     amountCents += Math.round(product.price * 100 * qty);
     
     // Minimal data for metadata to stay within Stripe's limits (50 keys, 500 chars per value)
@@ -51,9 +65,9 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     });
   }
 
-  if (amountCents <= 0) {
+  if (amountCents < 50) { // Stripe minimum is 50 cents
     res.status(400);
-    throw new Error('Invalid order total');
+    throw new Error('Total amount is too small (minimum $0.50)');
   }
 
   try {
@@ -63,22 +77,33 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
       automatic_payment_methods: { enabled: true },
       metadata: {
         userId: req.user._id.toString(),
-        // Only store IDs and quantities to re-verify in webhook
         items: JSON.stringify(safeItemsForMetadata)
       }
     });
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    console.error('Payment Intent Error:', err.message);
-    const stripeType = err?.type;
-    res.status(stripeType === 'StripeInvalidRequestError' ? 400 : 502);
-    throw new Error('Failed to initialize payment');
+    console.error('[Stripe API Error]', err.message);
+    
+    if (err.type === 'StripeAuthenticationError') {
+      res.status(401).json({ message: 'Invalid Stripe API Key. Check your environment variables.' });
+    } else if (err.type === 'StripeInvalidRequestError') {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(502).json({ message: 'Stripe gateway error: ' + err.message });
+    }
   }
 });
 
 // Webhook Handler for production-ready reliability
 const stripeWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let stripe;
+  try {
+    stripe = getStripe();
+  } catch (err) {
+    console.error('[Stripe Webhook Config Error]', err.message);
+    return res.status(500).send('Webhook config error');
+  }
   
   let event;
 
@@ -205,7 +230,9 @@ const createOrder = asyncHandler(async (req, res) => {
 });
 
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+  const orders = await Order.find({ user: req.user._id })
+    .populate('items.product')
+    .sort({ createdAt: -1 });
   res.json(orders);
 });
 

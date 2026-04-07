@@ -503,7 +503,10 @@
       "total_orders": "إجمالي الطلبات",
       "products": "المنتجات",
       "customers": "العملاء",
-      "sales_performance": "أداء المبيعات"
+      "sales_performance": "أداء المبيعات",
+      "recent_orders": "أحدث الطلبات",
+      "view_all": "عرض الكل",
+      "no_recent_orders": "لا توجد طلبات حديثة بعد"
     },
     "toast": {
       "new_order": "طلب جديد: {{amount}}$",
