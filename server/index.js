@@ -25,9 +25,19 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Enable trust proxy for Render and rate limiting
+app.set('trust proxy', 1);
+
 // Stripe Webhook must be BEFORE express.json() for raw body access
 const { stripeWebhook } = require('./controllers/paymentController');
-app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
+
+// Define Webhook Limiter first
+const webhookLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60, // allow up to 60 webhook events per minute
+});
+
+app.post('/api/payment/webhook', webhookLimiter, express.raw({ type: 'application/json' }), stripeWebhook);
 
 // Global Rate Limiting
 const globalLimiter = rateLimit({
@@ -92,16 +102,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 corsOptions.credentials = true;
+corsOptions.allowedHeaders = ['Content-Type', 'Authorization'];
+corsOptions.methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
 
 const createPaymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10, // stricter limit for payment intent creation
   message: 'Too many payment attempts, please try again after 15 minutes'
-});
-
-const webhookLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000,
-  max: 60, // allow up to 60 webhook events per minute
 });
 
 app.use(cors(corsOptions));
@@ -134,8 +141,11 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Payload limit security hardening
-app.use(express.json({ limit: '10kb' })); // Lowered for general routes
+// Special handling for routes that need larger payloads (e.g. image uploads)
+app.use('/api/uploads', require('./routes/uploadRoutes'));
+
+// Payload limit security hardening for all other routes
+app.use(express.json({ limit: '10kb' })); 
 
 app.get('/', (req, res) => {
   res.send('Saria Beauty API is running');
@@ -154,10 +164,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/newsletter', newsletterRoutes);
-app.use('/api/payment/webhook', webhookLimiter); // Apply limiter to webhook
 app.use('/api/payment/create-payment-intent', createPaymentLimiter);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/uploads', require('./routes/uploadRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const seedAdmin = async () => {
