@@ -7,8 +7,14 @@ const Product = require('../models/Product');
 const getStripe = () => {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
+    console.error('[Stripe Config Error] STRIPE_SECRET_KEY is missing in environment variables');
     throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
   }
+  
+  // Log partially for verification without exposing full secret
+  const keyHint = secretKey.startsWith('sk_test') ? 'Test Key' : 'Live Key';
+  console.log(`[Stripe Config] Initializing Stripe with ${keyHint}`);
+  
   return new Stripe(secretKey);
 };
 
@@ -56,7 +62,8 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     
     // Amount in cents (backend price is USD)
     // We use Math.round to avoid floating point issues
-    amountCents += Math.round(product.price * 100 * qty);
+    const priceInCents = Math.round(product.price * 100);
+    amountCents += priceInCents * qty;
     
     // Minimal data for metadata to stay within Stripe's limits (50 keys, 500 chars per value)
     safeItemsForMetadata.push({
@@ -65,24 +72,44 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     });
   }
 
+  // Final check for amount and currency
+  const currency = 'usd'; // Force USD as requested (not TND)
+  
+  if (!amountCents || isNaN(amountCents)) {
+    res.status(400);
+    throw new Error('Invalid total amount calculation');
+  }
+
   if (amountCents < 50) { // Stripe minimum is 50 cents
     res.status(400);
     throw new Error('Total amount is too small (minimum $0.50)');
   }
 
   try {
+    console.log(`[Stripe] Creating PaymentIntent for ${amountCents} cents in ${currency}`);
+    
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountCents,
-      currency: 'usd',
-      automatic_payment_methods: { enabled: true },
+      amount: Math.round(amountCents), // Ensure it's an integer
+      currency: currency,
+      // Explicitly specify payment methods to avoid "No valid payment method types" error
+      // if Automatic Payment Methods aren't fully configured in the dashboard.
+      payment_method_types: ['card'],
       metadata: {
         userId: req.user._id.toString(),
         items: JSON.stringify(safeItemsForMetadata)
       }
     });
+    
+    console.log(`[Stripe Success] PaymentIntent created: ${paymentIntent.id}`);
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    console.error('[Stripe API Error]', err.message);
+    console.error('[Stripe API Error Details]', {
+      message: err.message,
+      type: err.type,
+      code: err.code,
+      param: err.param,
+      requestId: err.requestId
+    });
     
     if (err.type === 'StripeAuthenticationError') {
       res.status(401).json({ message: 'Invalid Stripe API Key. Check your environment variables.' });
