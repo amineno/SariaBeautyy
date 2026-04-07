@@ -9,10 +9,10 @@ import { useCart } from '../hooks/useCart';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../hooks/useAuth';
 
-const stripePublishableKey = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '').trim();
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+const stripePublicKey = String(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '').trim();
+const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
-const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
+const CheckoutForm = ({ cartItems, payLabel, onSuccess }) => {
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
@@ -33,13 +33,13 @@ const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
     let isActive = true;
 
     const init = async () => {
-      if (!amountCents || amountCents <= 0) return;
+      if (!cartItems || cartItems.length === 0) return;
       setIsLoading(true);
       setErrorMessage('');
       try {
+        // Amount is now securely calculated on the backend
         const { data } = await api.post('/payment/create-payment-intent', {
-          amount: amountCents,
-          currency,
+          items: cartItems,
         });
         if (!isActive) return;
         setClientSecret(String(data?.clientSecret || ''));
@@ -58,7 +58,7 @@ const CheckoutForm = ({ amountCents, currency, payLabel, onSuccess }) => {
     return () => {
       isActive = false;
     };
-  }, [amountCents, currency, t]);
+  }, [cartItems, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -329,7 +329,7 @@ const Checkout = () => {
   const { cartItems, clearCart } = useCart();
   const { formatPrice } = useCurrency();
   const { user } = useAuth();
-  const currency = 'usd';
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -349,32 +349,38 @@ const Checkout = () => {
     return (cartItems || []).reduce((acc, item) => acc + Number(item.price || 0) * Number(item.qty || 0), 0);
   }, [cartItems]);
 
-  const amountCents = useMemo(() => {
-    if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
-    return Math.round(subtotal * 100);
-  }, [subtotal]);
-
-  const handleOrderSuccess = async (paymentIntent) => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      await api.post('/payment/order', {
-        items: cartItems,
-        total: subtotal,
-        paymentIntentId: paymentIntent.id
-      }, config);
-
-      clearCart();
-      toast.success(t('checkout.success.order_placed'));
-    } catch (err) {
-      console.error('Order creation failed', err);
-      toast.error(t('checkout.errors.order_failed'));
-    }
+  const handleOrderSuccess = () => {
+    clearCart();
+    setIsSuccess(true);
+    toast.success(t('checkout.success.order_placed'));
+    // Redirect after a short delay to let user see success message
+    setTimeout(() => {
+      navigate('/profile');
+    }, 3000);
   };
+
+  if (isSuccess) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-xl mx-auto card-strong bg-white dark:bg-gray-800 p-8 ring-1 ring-transparent shadow-xl space-y-6 text-center">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-serif text-gray-900 dark:text-white transition-colors duration-300">
+            {t('checkout.success.order_placed')}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Thank you for your order! Your payment was successful and we are now processing your order. You can view your order status in your profile.
+          </p>
+          <Link to="/profile" className="btn btn-primary w-full inline-block">
+            View My Orders
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!stripePromise) {
     return (
@@ -416,8 +422,7 @@ const Checkout = () => {
 
           <Elements stripe={stripePromise}>
             <CheckoutForm
-              amountCents={amountCents}
-              currency={currency}
+              cartItems={cartItems}
               payLabel={t('checkout.form.pay_amount', { amount: formatPrice(subtotal) })}
               onSuccess={handleOrderSuccess}
             />

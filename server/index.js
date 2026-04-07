@@ -25,6 +25,10 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Stripe Webhook must be BEFORE express.json() for raw body access
+const { stripeWebhook } = require('./controllers/paymentController');
+app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
+
 // Global Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -91,7 +95,13 @@ corsOptions.credentials = true;
 
 const createPaymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 10, // stricter limit for payment intent creation
+  message: 'Too many payment attempts, please try again after 15 minutes'
+});
+
+const webhookLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60, // allow up to 60 webhook events per minute
 });
 
 app.use(cors(corsOptions));
@@ -124,7 +134,8 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.use(express.json({ limit: '20mb' }));
+// Payload limit security hardening
+app.use(express.json({ limit: '10kb' })); // Lowered for general routes
 
 app.get('/', (req, res) => {
   res.send('Saria Beauty API is running');
@@ -143,6 +154,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/payment/webhook', webhookLimiter); // Apply limiter to webhook
 app.use('/api/payment/create-payment-intent', createPaymentLimiter);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/uploads', require('./routes/uploadRoutes'));
