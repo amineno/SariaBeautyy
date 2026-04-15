@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { 
   Plus, Trash2, Pencil, Users, ShoppingCart, Package, 
   BarChart3, RefreshCw, LayoutDashboard, 
-  ChevronRight, Search, Filter, Image as ImageIcon,
+  ChevronRight, ChevronDown, ChevronUp, Search, Filter, Image as ImageIcon,
   DollarSign, Box, UserCheck, AlertCircle, X,
   TrendingUp, TrendingDown, Target, Truck, Zap, Star
 } from 'lucide-react';
@@ -21,7 +21,7 @@ const AdminDashboard = () => {
     headers: { Authorization: `Bearer ${user?.token}` }
   }), [user]);
   
-  const SERVER_ORIGIN = api.defaults.baseURL.replace(/\/api$/, '');
+  const SERVER_ORIGIN = (api.defaults.baseURL || '').replace(/\/api$/, '');
   
   const resolveImage = (img) => {
     if (!img) return '';
@@ -74,6 +74,7 @@ const AdminDashboard = () => {
   const salesChangePercent = lastMonth && prevMonth && prevMonth.sales ? (salesDelta / prevMonth.sales) * 100 : null;
 
   const displayFields = (p) => {
+    if (!p) return { name: '', description: '' };
     const lang = i18n.language || 'en';
     const trans = (p.translations || {})[lang];
     const name = trans?.name || p.name;
@@ -161,7 +162,7 @@ const AdminDashboard = () => {
           setReviews(prev => ([{
             ...payload.review,
             productId: payload.productId,
-            product: payload.product || products.find(p => p._id === payload.productId), // Try to find product if not in payload
+            product: payload.product || (Array.isArray(products) ? products.find(p => p._id === payload.productId) : null), // Try to find product if not in payload
             productName: payload.productName
           }, ...prev]));
         } else if (payload.channel === 'product' && payload.type === 'product_deleted') {
@@ -1114,7 +1115,7 @@ const AdminDashboard = () => {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-                              #{o._id.slice(-6).toUpperCase()}
+                              #{o._id?.slice(-6).toUpperCase() || '---'}
                               {expandedOrders[o._id] ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(o.createdAt).toLocaleDateString()}</div>
@@ -1224,7 +1225,7 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-primary font-bold">
-                              {u.name.charAt(0).toUpperCase()}
+                              {u.name?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
                             <div>
                               <p className="font-bold text-gray-900 dark:text-white">{u.name}</p>

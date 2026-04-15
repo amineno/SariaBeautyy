@@ -26,6 +26,7 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 import ChatAssistant from './components/ChatAssistant';
 import Footer from './components/Footer';
 import RequireAdmin from './components/RequireAdmin';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const NotFound = ({ t }) => (
   <main className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -101,7 +102,13 @@ function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
+            <Route path="/admin" element={
+              <RequireAdmin>
+                <ErrorBoundary>
+                  <AdminDashboard />
+                </ErrorBoundary>
+              </RequireAdmin>
+            } />
             <Route path="*" element={<NotFound t={t} />} />
             {/* Add more routes here */}
           </Routes>

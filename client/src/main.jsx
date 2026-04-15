@@ -50,4 +50,6 @@ const bootstrap = async () => {
   )
 };
 
-bootstrap();
+bootstrap().catch(err => {
+  console.error('Critical bootstrap error:', err);
+});
