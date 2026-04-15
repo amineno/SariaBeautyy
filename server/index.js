@@ -1,4 +1,5 @@
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -23,10 +24,16 @@ const paymentRoutes = require('./routes/paymentRoutes');
 connectDB();
 
 const app = express();
+app.use(compression());
 const PORT = process.env.PORT || 5000;
 
 // Enable trust proxy for Render and rate limiting
 app.set('trust proxy', 1);
+
+// Lightweight ping endpoint to keep service alive
+app.get('/api/ping', (req, res) => {
+  res.status(200).send('pong');
+});
 
 // Stripe Webhook must be BEFORE express.json() for raw body access
 const { stripeWebhook } = require('./controllers/paymentController');
@@ -157,16 +164,24 @@ app.get('/api/config/public', (req, res) => {
   });
 });
 
-app.use('/api/products', productRoutes);
+// Cache middleware for public data
+const cacheControl = (maxAge) => (req, res, next) => {
+  if (req.method === 'GET') {
+    res.set('Cache-Control', `public, max-age=${maxAge}`);
+  }
+  next();
+};
+
+app.use('/api/products', cacheControl(300), productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/pages', pageRoutes);
+app.use('/api/pages', cacheControl(300), pageRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/payment/create-payment-intent', createPaymentLimiter);
 app.use('/api/payment', paymentRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', cacheControl(86400), express.static(path.join(__dirname, 'uploads')));
 
 const seedAdmin = async () => {
   try {

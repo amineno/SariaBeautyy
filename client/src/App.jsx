@@ -49,6 +49,16 @@ function App() {
 
   useEffect(() => {
     document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    
+    // Wake up backend if it's sleeping (Render cold start)
+    const wakeUpBackend = async () => {
+      try {
+        await api.get('/ping');
+      } catch (e) {
+        // Ignore error, just a ping
+      }
+    };
+    wakeUpBackend();
   }, [i18n.language]);
 
   return (
@@ -82,8 +92,12 @@ function App() {
         <Header />
         <ChatAssistant />
         <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300 backdrop-blur-sm">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="mt-4 text-sm font-serif italic text-primary/60 dark:text-rose-400/60 animate-pulse">Saria Beauty</p>
           </div>
         }>
           <Routes>

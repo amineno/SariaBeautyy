@@ -11,9 +11,17 @@ import { Helmet } from 'react-helmet-async';
 const Home = () => {
   const { t, i18n } = useTranslation();
   const { formatPrice } = useCurrency();
-  const [products, setProducts] = useState([]);
-  const [topProducts, setTopProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Try to load from localStorage for immediate display
+  const [products, setProducts] = useState(() => {
+    const cached = localStorage.getItem('cached_products');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [topProducts, setTopProducts] = useState(() => {
+    const cached = localStorage.getItem('cached_top_products');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(!products.length);
   const [email, setEmail] = useState('');
 
   const resolveImage = (img) => {
@@ -30,8 +38,16 @@ const Home = () => {
           api.get('/products'),
           api.get('/products/top')
         ]);
-        setProducts(pRes.data || []);
-        setTopProducts(topRes.data || []);
+        
+        const productsData = pRes.data || [];
+        const topProductsData = topRes.data || [];
+        
+        setProducts(productsData);
+        setTopProducts(topProductsData);
+        
+        // Cache for next time
+        localStorage.setItem('cached_products', JSON.stringify(productsData));
+        localStorage.setItem('cached_top_products', JSON.stringify(topProductsData));
       } catch (e) {
         console.error('Error fetching home products', e);
       } finally {
@@ -203,45 +219,56 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {topProducts.map((product) => (
-              <Link
-                key={product._id}
-                to={`/product/${product._id}`}
-                className="card-strong bg-white/90 dark:bg-gray-800/90 rounded-3xl overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col border border-rose-100/80 dark:border-gray-700"
-              >
-                <div className="h-64 overflow-hidden relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl flex items-center justify-center shadow-inner m-3 mb-0">
-                  <img
-                    src={resolveImage(product.image)}
-                    alt={displayFields(product).name}
-                    className="max-w-full max-h-full object-contain p-4 transition-transform duration-700 group-hover:scale-110"
-                  />
-                  {product.rating > 4.7 && (
-                    <div className="absolute top-4 right-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                      {t('home.top_rated')}
+            {loading && !topProducts.length ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="card p-4 dark:bg-gray-800 dark:border-gray-700 animate-pulse">
+                  <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-2xl mb-4" />
+                  <div className="h-5 w-3/4 bg-gray-100 dark:bg-gray-700 rounded-md mb-2" />
+                  <div className="h-4 w-1/2 bg-gray-100 dark:bg-gray-700 rounded-md" />
+                </div>
+              ))
+            ) : (
+              topProducts.map((product) => (
+                <Link
+                  key={product._id}
+                  to={`/product/${product._id}`}
+                  className="card-strong bg-white/90 dark:bg-gray-800/90 rounded-3xl overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col border border-rose-100/80 dark:border-gray-700"
+                >
+                  <div className="h-64 overflow-hidden relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl flex items-center justify-center shadow-inner m-3 mb-0">
+                    <img
+                      src={resolveImage(product.image)}
+                      alt={displayFields(product).name}
+                      loading="lazy"
+                      className="max-w-full max-h-full object-contain p-4 transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {product.rating > 4.7 && (
+                      <div className="absolute top-4 right-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                        {t('home.top_rated')}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-serif text-gray-900 dark:text-white mb-2 truncate">
+                      {displayFields(product).name}
+                    </h3>
+                    <div className="flex items-center gap-1 mb-4 text-amber-400">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : ''}`} />
+                      ))}
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.numReviews})</span>
                     </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-serif text-gray-900 dark:text-white mb-2 truncate">
-                    {displayFields(product).name}
-                  </h3>
-                  <div className="flex items-center gap-1 mb-4 text-amber-400">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : ''}`} />
-                    ))}
-                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.numReviews})</span>
+                    <div className="flex justify-between items-center">
+                      <p className="text-primary font-bold text-xl">
+                        {formatPrice(product.price)}
+                      </p>
+                      <span className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+                        {t('shop_now')} <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-primary font-bold text-xl">
-                      {formatPrice(product.price)}
-                    </p>
-                    <span className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-                      {t('shop_now')} <ArrowRight className="w-4 h-4" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
           <div className="text-center mt-12">
             <Link to="/shop" className="btn btn-primary px-10 py-4 rounded-full font-semibold">

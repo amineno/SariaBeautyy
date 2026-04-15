@@ -13,6 +13,7 @@ const API_ORIGIN = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
 const api = axios.create({
   baseURL: API_ORIGIN,
+  timeout: 10000, // 10s timeout
 });
 
 api.interceptors.request.use(

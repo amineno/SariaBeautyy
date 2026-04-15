@@ -125,7 +125,7 @@ const Hero = () => {
                         src={HERO_IMAGE} 
                         alt="Saria Beauty Collection" 
                         className="w-full h-[400px] lg:h-[500px] object-cover"
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
                         fetchPriority="high"
                     />
