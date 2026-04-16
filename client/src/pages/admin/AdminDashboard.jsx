@@ -1194,6 +1194,37 @@ const AdminDashboard = () => {
                                     );
                                   })}
                                 </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                                  <div className="space-y-2">
+                                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                      <Truck size={12} /> {t('admin.orders.shipping_address')}
+                                    </h4>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                      {o.shippingAddress?.address ? (
+                                        <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                          <p className="font-medium">{o.shippingAddress.address}</p>
+                                          <p>{o.shippingAddress.city}, {o.shippingAddress.postalCode}</p>
+                                          <p className="text-xs text-gray-500">{o.shippingAddress.country}</p>
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm text-gray-400 italic">{t('admin.orders.no_address')}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                      <Zap size={12} /> {t('admin.orders.phone_number')}
+                                    </h4>
+                                    <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                      {o.phone ? (
+                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{o.phone}</p>
+                                      ) : (
+                                        <p className="text-sm text-gray-400 italic">{t('admin.orders.no_phone')}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </td>
                           </tr>

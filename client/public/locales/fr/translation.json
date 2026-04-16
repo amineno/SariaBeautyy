@@ -400,6 +400,10 @@
       "no_email": "Pas d'email",
       "items": "articles",
       "shipping": "Livraison",
+      "shipping_address": "Adresse de livraison",
+      "phone_number": "Numéro de téléphone",
+      "no_phone": "Pas de numéro de téléphone",
+      "no_address": "Aucune adresse fournie",
       "payment": "Paiement",
       "status": {
         "paid": "Payé",

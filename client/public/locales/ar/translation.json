@@ -400,6 +400,10 @@
       "no_email": "لا يوجد بريد إلكتروني",
       "items": "عناصر",
       "shipping": "الشحن",
+      "shipping_address": "عنوان الشحن",
+      "phone_number": "رقم الهاتف",
+      "no_phone": "لا يوجد رقم هاتف",
+      "no_address": "لم يتم توفير عنوان",
       "payment": "الدفع",
       "status": {
         "paid": "مدفوع",

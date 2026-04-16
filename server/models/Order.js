@@ -35,6 +35,15 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'shipped', 'delivered'],
     default: 'pending'
   },
+  shippingAddress: {
+    address: { type: String },
+    city: { type: String },
+    postalCode: { type: String },
+    country: { type: String },
+  },
+  phone: {
+    type: String
+  },
   paymentIntentId: {
     type: String,
     unique: true

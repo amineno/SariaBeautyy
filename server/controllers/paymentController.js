@@ -213,12 +213,25 @@ const stripeWebhook = async (req, res) => {
           return res.status(400).send('Webhook Error: Amount mismatch');
         }
 
+        // 7. Extract Shipping and Phone details
+        const shipping = paymentIntent.shipping || {};
+        const billing = paymentIntent.billing_details || {};
+        const phone = shipping.phone || billing.phone;
+        const address = shipping.address || billing.address || {};
+
         const order = new Order({
           user: userId,
           items: verifiedOrderItems,
           total: verifiedTotalCents / 100,
           paymentStatus: 'paid',
           status: 'pending',
+          shippingAddress: {
+            address: address.line1 + (address.line2 ? `, ${address.line2}` : ''),
+            city: address.city,
+            postalCode: address.postal_code,
+            country: address.country
+          },
+          phone: phone,
           paymentIntentId: paymentIntent.id
         });
 
