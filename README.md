@@ -5,7 +5,7 @@
 ---
 
 ## 🚀 Live Demo
-[(https://www.sariabeauty.com/)]
+[https://saria-beauty.vercel.app](https://saria-beauty.vercel.app)
 
 ---
 
