@@ -11,7 +11,7 @@ import {
   BarChart3, RefreshCw, LayoutDashboard, 
   ChevronRight, ChevronDown, ChevronUp, Image as ImageIcon,
   DollarSign, Box, UserCheck, AlertCircle, X,
-  TrendingUp, Truck, Zap, Star,
+  TrendingUp, Truck, Zap, Star, Target,
   Download, MessageSquare
 } from 'lucide-react';
 
