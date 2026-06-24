@@ -1193,15 +1193,22 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                              o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 
-                              o.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 
-                              'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                            }`}>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const nextStatus = o.status === 'delivered' ? 'pending' : o.status === 'shipped' ? 'delivered' : 'shipped';
+                                updateOrderStatus(o._id, nextStatus);
+                              }}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer hover:scale-105 active:scale-95 transition-all ${
+                                o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 
+                                o.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 
+                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                              }`}
+                            >
                               {o.status === 'delivered' ? t('admin.orders.status.delivered') : 
                                o.status === 'shipped' ? t('admin.orders.status.shipped') : 
                                t('admin.orders.status.pending')}
-                            </div>
+                            </button>
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex justify-end gap-2" onClick={e => e.stopPropagation()}>
@@ -1294,98 +1301,29 @@ const AdminDashboard = () => {
                                       <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
                                         <Truck size={12} /> {t('admin.orders.shipping_address')}
                                       </h4>
-                                      {editingOrderDetails !== o._id ? (
-                                        <button 
-                                          onClick={() => {
-                                            setEditingOrderDetails(o._id);
-                                            setOrderEditForm({
-                                              address: o.shippingAddress?.address || '',
-                                              city: o.shippingAddress?.city || '',
-                                              postalCode: o.shippingAddress?.postalCode || '',
-                                              phone: o.phone || ''
-                                            });
-                                          }}
-                                          className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
-                                        >
-                                          <Pencil size={10} /> {t('common.edit') || 'Modifier'}
-                                        </button>
-                                      ) : null}
                                     </div>
                                     
-                                    {editingOrderDetails === o._id ? (
-                                      <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
-                                        <div className="space-y-2">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.address') || 'Adresse'}</label>
-                                          <input 
-                                            className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
-                                            value={orderEditForm.address} 
-                                            onChange={e => setOrderEditForm(f => ({ ...f, address: e.target.value }))}
-                                          />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                          <div className="space-y-1">
-                                            <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.city') || 'Ville'}</label>
-                                            <input 
-                                              className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
-                                              value={orderEditForm.city} 
-                                              onChange={e => setOrderEditForm(f => ({ ...f, city: e.target.value }))}
-                                            />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                        {o.shippingAddress?.address ? (
+                                          <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                            <p className="font-medium">{o.shippingAddress.address}</p>
+                                            <p>{o.shippingAddress.city}, {o.shippingAddress.postalCode}</p>
+                                            <p className="text-xs text-gray-500">{o.shippingAddress.country}</p>
                                           </div>
-                                          <div className="space-y-1">
-                                            <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.postal') || 'Code Postal'}</label>
-                                            <input 
-                                              className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
-                                              value={orderEditForm.postalCode} 
-                                              onChange={e => setOrderEditForm(f => ({ ...f, postalCode: e.target.value }))}
-                                            />
-                                          </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.phone_number')}</label>
-                                          <input 
-                                            className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
-                                            value={orderEditForm.phone} 
-                                            onChange={e => setOrderEditForm(f => ({ ...f, phone: e.target.value }))}
-                                          />
-                                        </div>
-                                        <div className="flex gap-2 pt-2">
-                                          <button 
-                                            onClick={(e) => handleOrderUpdate(e, o._id)}
-                                            className="flex-1 py-2 text-xs font-bold bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                                          >
-                                            {t('common.save') || 'Enregistrer'}
-                                          </button>
-                                          <button 
-                                            onClick={() => setEditingOrderDetails(null)}
-                                            className="px-4 py-2 text-xs font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
-                                          >
-                                            {t('common.cancel')}
-                                          </button>
-                                        </div>
+                                        ) : (
+                                          <p className="text-sm text-gray-400 italic">{t('admin.orders.no_address')}</p>
+                                        )}
                                       </div>
-                                    ) : (
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                                          {o.shippingAddress?.address ? (
-                                            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                                              <p className="font-medium">{o.shippingAddress.address}</p>
-                                              <p>{o.shippingAddress.city}, {o.shippingAddress.postalCode}</p>
-                                              <p className="text-xs text-gray-500">{o.shippingAddress.country}</p>
-                                            </div>
-                                          ) : (
-                                            <p className="text-sm text-gray-400 italic">{t('admin.orders.no_address')}</p>
-                                          )}
-                                        </div>
-                                        <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                                          <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-1">{t('admin.orders.phone_number')}</h4>
-                                          {o.phone ? (
-                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{o.phone}</p>
-                                          ) : (
-                                            <p className="text-sm text-gray-400 italic">{t('admin.orders.no_phone')}</p>
-                                          )}
-                                        </div>
+                                      <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                        <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-1">{t('admin.orders.phone_number')}</h4>
+                                        {o.phone ? (
+                                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{o.phone}</p>
+                                        ) : (
+                                          <p className="text-sm text-gray-400 italic">{t('admin.orders.no_phone')}</p>
+                                        )}
                                       </div>
-                                    )}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
