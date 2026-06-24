@@ -110,16 +110,16 @@ const getChatResponse = async (req, res) => {
 
   const sessionKey = sessionId || userId || 'anonymous';
   const lowerMsg = message.toLowerCase();
-  
+
   // Improved language detection
   const isArabic = /[\u0600-\u06FF]/.test(message);
   const isFrench = /\b(le|la|les|bonjour|merci|produit|prix|je|tu|vous|nous|pas|est|c'est|ca|ça|comment|pourquoi|salut|au revoir|s'il|plait)\b/i.test(message);
-  
+
   // Prioritize detected language over UI language for better UX
   let lang = reqLang || 'en';
   if (isArabic) lang = 'ar';
   else if (isFrench) lang = 'fr';
-  
+
   // Get or create conversation context
   let context = conversationContext.get(sessionKey) || {
     messages: [],
@@ -131,7 +131,7 @@ const getChatResponse = async (req, res) => {
 
   // Add current message to context
   context.messages.push({ text: message, sender: 'user', timestamp: new Date() });
-  
+
   let reply = t(lang, 'default');
   let useLLM = false;
 
@@ -156,21 +156,21 @@ const getChatResponse = async (req, res) => {
     }
     context.lastTopic = 'greeting';
   }
-  
+
   // Enhanced product recommendations
-  else if (lowerMsg.includes('product') || lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('produit') || lowerMsg.includes('prix') || lowerMsg.includes('المنتج') || lowerMsg.includes('سعر') || lowerMsg.includes('buy') || lowerMsg.includes('acheter') || lowerMsg.includes('achat') || lowerMsg.includes('شراء') || 
-           lowerMsg.includes('cream') || lowerMsg.includes('serum') || lowerMsg.includes('oil') || lowerMsg.includes('mask') || lowerMsg.includes('cleanser') || lowerMsg.includes('toner') || lowerMsg.includes('moisturizer') || lowerMsg.includes('shampoo') || lowerMsg.includes('conditioner') || lowerMsg.includes('lipstick') || lowerMsg.includes('makeup') ||
-           lowerMsg.includes('crème') || lowerMsg.includes('sérum') || lowerMsg.includes('huile') || lowerMsg.includes('masque') || lowerMsg.includes('nettoyant') || lowerMsg.includes('shampoing') || lowerMsg.includes('maquillage') || lowerMsg.includes('rouge à lèvres') ||
-           lowerMsg.includes('beauty') || lowerMsg.includes('bodycare') || lowerMsg.includes('haircare') || lowerMsg.includes('skincare') || lowerMsg.includes('tools') ||
-           lowerMsg.includes('beauté') || lowerMsg.includes('soin') || lowerMsg.includes('cheveux') || lowerMsg.includes('outils')) {
+  else if (lowerMsg.includes('product') || lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('produit') || lowerMsg.includes('prix') || lowerMsg.includes('المنتج') || lowerMsg.includes('سعر') || lowerMsg.includes('buy') || lowerMsg.includes('acheter') || lowerMsg.includes('achat') || lowerMsg.includes('شراء') ||
+    lowerMsg.includes('cream') || lowerMsg.includes('serum') || lowerMsg.includes('oil') || lowerMsg.includes('mask') || lowerMsg.includes('cleanser') || lowerMsg.includes('toner') || lowerMsg.includes('moisturizer') || lowerMsg.includes('shampoo') || lowerMsg.includes('conditioner') || lowerMsg.includes('lipstick') || lowerMsg.includes('makeup') ||
+    lowerMsg.includes('crème') || lowerMsg.includes('sérum') || lowerMsg.includes('huile') || lowerMsg.includes('masque') || lowerMsg.includes('nettoyant') || lowerMsg.includes('shampoing') || lowerMsg.includes('maquillage') || lowerMsg.includes('rouge à lèvres') ||
+    lowerMsg.includes('beauty') || lowerMsg.includes('bodycare') || lowerMsg.includes('haircare') || lowerMsg.includes('skincare') || lowerMsg.includes('tools') ||
+    lowerMsg.includes('beauté') || lowerMsg.includes('soin') || lowerMsg.includes('cheveux') || lowerMsg.includes('outils')) {
     let prods;
     let query = '';
     let msgKey = 'products';
-    
+
     // Check for specific search terms
     // Remove common stop words and intent keywords to find the actual query
     const searchTerms = lowerMsg.replace(/product|produit|price|prix|cost|buy|acheter|achat|شراء|المنتج|سعر|show|montrez|voir|find|trouver/gi, '').trim();
-    
+
     if (searchTerms.length > 2) {
       query = searchTerms;
       // Search in name or category
@@ -183,7 +183,7 @@ const getChatResponse = async (req, res) => {
           { 'translations.ar.name': regex }
         ]
       }).sort({ rating: -1 }).limit(3);
-      
+
       if (prods && prods.length > 0) {
         msgKey = 'products_found';
       } else {
@@ -197,21 +197,21 @@ const getChatResponse = async (req, res) => {
     if (!prods || prods.length === 0) {
       prods = await Product.find({}).sort({ rating: -1 }).limit(3);
     }
-    
+
     const list = prods.map(p => {
       const name = (lang === 'fr' ? p.translations?.fr?.name : lang === 'ar' ? p.translations?.ar?.name : p.name) || p.name;
       return `${name} ($${p.price})`;
     }).join(', ');
-    
+
     reply = t(lang, msgKey, { list, query });
     context.lastTopic = 'products';
   }
-  
+
   else if (lowerMsg.includes('order') || lowerMsg.includes('commande') || lowerMsg.includes('طلب') || lowerMsg.includes('track') || lowerMsg.includes('status')) {
     reply = t(lang, 'navigate');
     context.lastTopic = 'orders';
   }
-  
+
   // Existing functionality for other topics
   else if (lowerMsg.includes('shipping') || lowerMsg.includes('delivery') || lowerMsg.includes('livraison') || lowerMsg.includes('expédition') || lowerMsg.includes('شحن') || lowerMsg.includes('تسليم')) {
     reply = t(lang, 'shipping');
@@ -273,18 +273,18 @@ const getChatResponse = async (req, res) => {
     context.lastTopic = 'navigation';
   } else if (lowerMsg.match(/\b(yes|yeah|sure|ok|okay|oui|d'accord|ouais|نعم|أكيد)\b/)) {
     if (context.lastTopic === 'orders_empty' || context.lastTopic === 'follow_up_products' || context.lastTopic === 'greeting') {
-        // Trigger product logic manually
-        // We can't easily recurse, so we'll just set a flag or duplicate simple logic
-        // For simplicity, let's just show top products
-        const prods = await Product.find({}).sort({ rating: -1 }).limit(3);
-        const list = prods.map(p => {
-            const name = (lang === 'fr' ? p.translations?.fr?.name : lang === 'ar' ? p.translations?.ar?.name : p.name) || p.name;
-            return `${name} ($${p.price})`;
-        }).join(', ');
-        reply = t(lang, 'products', { list });
-        context.lastTopic = 'products';
+      // Trigger product logic manually
+      // We can't easily recurse, so we'll just set a flag or duplicate simple logic
+      // For simplicity, let's just show top products
+      const prods = await Product.find({}).sort({ rating: -1 }).limit(3);
+      const list = prods.map(p => {
+        const name = (lang === 'fr' ? p.translations?.fr?.name : lang === 'ar' ? p.translations?.ar?.name : p.name) || p.name;
+        return `${name} ($${p.price})`;
+      }).join(', ');
+      reply = t(lang, 'products', { list });
+      context.lastTopic = 'products';
     } else {
-        reply = t(lang, 'yes');
+      reply = t(lang, 'yes');
     }
   } else if (lowerMsg.match(/\b(no|nope|non|لا|كلا)\b/)) {
     reply = t(lang, 'no');
@@ -345,16 +345,16 @@ const getChatResponse = async (req, res) => {
   }
 
   context.messages.push({ text: finalReply, sender: 'ai', timestamp: new Date() });
-  
+
   if (context.messages.length > 10) {
     context.messages = context.messages.slice(-10);
   }
-  
+
   conversationContext.set(sessionKey, context);
 
   setTimeout(() => {
-    res.json({ 
-      response: finalReply, 
+    res.json({
+      response: finalReply,
       suggestions: getSmartSuggestions(context.lastTopic, lang),
       context: {
         lastTopic: context.lastTopic,
@@ -386,7 +386,7 @@ const getSmartSuggestions = (lastTopic, lang) => {
       greeting: ["ما المنتجات التي توصي بها؟", "أخبرني عن الشحن", "أظهر لي أحدث المنتجات"]
     }
   };
-  
+
   return suggestions[lang]?.[lastTopic] || suggestions[lang]?.greeting || suggestions.en.greeting;
 };
 

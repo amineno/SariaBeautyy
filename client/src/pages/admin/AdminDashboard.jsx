@@ -615,7 +615,7 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4 text-right">
                           <button 
                             onClick={() => deleteReview(r.productId, r._id)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            className="flex items-center justify-center w-9 h-9 ml-auto rounded-xl bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all duration-200 border border-rose-100 dark:border-rose-900/20 hover:scale-110 active:scale-95 shadow-sm"
                             title={t('admin.common.delete') || 'Delete'}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1074,11 +1074,19 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button onClick={() => editProduct(p)} className="p-2 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors">
+                            <div className="flex justify-end gap-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                              <button 
+                                onClick={() => editProduct(p)} 
+                                className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/20 transition-all duration-200 border border-amber-100 dark:border-amber-900/20 hover:scale-110 active:scale-95 shadow-sm"
+                                title={t('admin.products.edit_btn')}
+                              >
                                 <Pencil className="w-4 h-4" />
                               </button>
-                              <button onClick={() => deleteProduct(p._id)} className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                              <button 
+                                onClick={() => deleteProduct(p._id)} 
+                                className="flex items-center justify-center w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all duration-200 border border-rose-100 dark:border-rose-900/20 hover:scale-110 active:scale-95 shadow-sm"
+                                title={t('admin.common.delete')}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
@@ -1278,13 +1286,13 @@ const AdminDashboard = () => {
                           <div className="flex items-center justify-end gap-3">
                             <button 
                               onClick={() => toggleAdmin(u._id, !u.isAdmin)}
-                              className="text-xs font-bold text-primary hover:text-rose-600 dark:hover:text-rose-400 hover:underline"
+                              className="text-xs font-bold text-primary hover:text-rose-600 dark:hover:text-rose-400 transition-colors hover:underline"
                             >
                               {u.isAdmin ? t('admin.users.remove_admin') : t('admin.users.make_admin')}
                             </button>
                             <button 
                               onClick={() => deleteUser(u._id)}
-                              className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all duration-200 border border-rose-100 dark:border-rose-900/20 hover:scale-110 active:scale-95 shadow-sm"
                               title={t('admin.common.delete') || 'Delete User'}
                             >
                               <Trash2 className="w-4 h-4" />

@@ -441,15 +441,15 @@ const buildProductsFromImages = () => {
       const description = meta?.description || 'A carefully crafted beauty item from our rose-gold collection.';
       const translations = meta?.translations
         ? {
-            en: { name, description },
-            fr: { name: meta.translations.fr.name, description: meta.translations.fr.description },
-            ar: { name: meta.translations.ar.name, description: meta.translations.ar.description },
-          }
+          en: { name, description },
+          fr: { name: meta.translations.fr.name, description: meta.translations.fr.description },
+          ar: { name: meta.translations.ar.name, description: meta.translations.ar.description },
+        }
         : {
-            en: { name, description },
-            fr: { name, description: 'Un article de beauté soigneusement conçu de notre collection or rose.' },
-            ar: { name, description: 'منتج عناية جمال مصمم بعناية من مجموعتنا الذهبية الوردية.' },
-          };
+          en: { name, description },
+          fr: { name, description: 'Un article de beauté soigneusement conçu de notre collection or rose.' },
+          ar: { name, description: 'منتج عناية جمال مصمم بعناية من مجموعتنا الذهبية الوردية.' },
+        };
       return {
         name,
         description,
@@ -578,16 +578,16 @@ module.exports = {
 
       // Validate inputs
       if (rating === undefined || rating === null) {
-         res.status(400);
-         throw new Error('Rating is required');
+        res.status(400);
+        throw new Error('Rating is required');
       }
       if (Number(rating) < 0 || Number(rating) > 5) {
-         res.status(400);
-         throw new Error('Rating must be between 0 and 5');
+        res.status(400);
+        throw new Error('Rating must be between 0 and 5');
       }
       if (!comment) {
-         res.status(400);
-         throw new Error('Comment is required');
+        res.status(400);
+        throw new Error('Comment is required');
       }
 
       const product = await Product.findById(productId);
@@ -620,23 +620,23 @@ module.exports = {
 
       const totalRating = product.reviews.reduce((acc, item) => item.rating + acc, 0);
       product.rating = totalRating / product.reviews.length;
-      
+
       // Ensure rating is valid number
       if (isNaN(product.rating)) product.rating = 0;
-      
+
       // Fix decimal places
       product.rating = Number(product.rating.toFixed(2));
 
       const savedProduct = await product.save();
-      
+
       broadcastEvent({ channel: 'product', type: 'product_updated', product: savedProduct });
       broadcastEvent({ channel: 'product', type: 'review_created', review, productId: product._id, productName: product.name });
 
       res.status(201).json(review);
     } catch (error) {
-       console.error('Review Error:', error);
-       const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-       res.status(statusCode).json({ message: error.message || 'Review failed' });
+      console.error('Review Error:', error);
+      const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+      res.status(statusCode).json({ message: error.message || 'Review failed' });
     }
   },
   createProduct: async (req, res) => {
