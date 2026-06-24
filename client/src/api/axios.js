@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const normalizeApiBaseUrl = (value) => {
   const raw = (value || '').trim();
-  if (!raw) return 'http://localhost:5001/api';
+  if (!raw) return 'http://localhost:5000/api';
 
   const noTrailingSlash = raw.endsWith('/') ? raw.slice(0, -1) : raw;
   if (noTrailingSlash.endsWith('/api')) return noTrailingSlash;

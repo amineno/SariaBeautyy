@@ -411,7 +411,10 @@
         "shipped": "Expédié",
         "delivered": "Livré",
         "pending": "En attente",
-        "processing": "En traitement"
+        "processing": "En traitement",
+        "confirmed": "Confirmée",
+        "cancelled": "Annulée",
+        "pending_whatsapp": "En attente WhatsApp"
       },
       "table": {
         "order": "Commande",
@@ -581,7 +584,8 @@
       "payment_init_failed": "Impossible d'initialiser le paiement",
       "order_failed": "Échec de la commande !",
       "payment_unexpected": "Une erreur inattendue est survenue.",
-      "paypal_not_configured": "PayPal n'est pas configuré."
+      "paypal_not_configured": "PayPal n'est pas configuré.",
+      "redirect_whatsapp": "Redirection vers WhatsApp..."
     },
     "success": {
       "order_placed": "Commande passée avec succès !"
@@ -600,6 +604,7 @@
       "qty": "Qté",
       "pay_amount": "Payer {{amount}}",
       "initializing_payment": "Initialisation du paiement…",
+      "processing": "Traitement en cours...",
       "test_mode_notice": "",
       "sections": {
         "contact": "Coordonnées",
@@ -618,10 +623,12 @@
         "postal_code_required": "Le code postal est obligatoire",
         "country_code_required": "Le pays est obligatoire",
         "payment_failed": "Le paiement a échoué",
-        "payment_not_completed": "Paiement non terminé"
+        "payment_not_completed": "Paiement non terminé",
+        "required_fields": "Veuillez remplir tous les champs obligatoires"
       },
       "success": {
-        "payment_successful": "Paiement réussi"
+        "payment_successful": "Paiement réussi",
+        "redirecting_whatsapp": "Redirection vers WhatsApp..."
       }
     },
     "countries": {

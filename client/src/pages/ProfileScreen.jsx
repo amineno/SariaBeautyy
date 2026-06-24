@@ -237,14 +237,24 @@ const ProfileScreen = () => {
                               </div>
                               <div className="flex flex-col items-end gap-2">
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                                  order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 
+                                  order.paymentStatus === 'whatsapp' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300' :
+                                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
                                 }`}>
-                                  {order.paymentStatus === 'paid' ? t('admin.orders.status.paid') : t('admin.orders.status.unpaid')}
+                                  {order.paymentStatus === 'paid' ? t('admin.orders.status.paid') : 
+                                   order.paymentStatus === 'whatsapp' ? 'WhatsApp' :
+                                   t('admin.orders.status.unpaid')}
                                 </span>
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  order.status === 'delivered' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                                  order.status === 'delivered' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                                  order.status === 'shipped' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                                  order.status === 'pending_whatsapp' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300' :
+                                  'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                                 }`}>
-                                  {order.status === 'delivered' ? t('admin.orders.status.delivered') : order.status === 'shipped' ? t('admin.orders.status.shipped') : t('admin.orders.status.pending')}
+                                  {order.status === 'delivered' ? t('admin.orders.status.delivered') : 
+                                   order.status === 'shipped' ? t('admin.orders.status.shipped') : 
+                                   order.status === 'pending_whatsapp' ? 'WhatsApp Order' :
+                                   t('admin.orders.status.pending')}
                                 </span>
                               </div>
                             </div>

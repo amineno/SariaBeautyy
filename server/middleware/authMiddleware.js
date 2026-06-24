@@ -58,8 +58,8 @@ const admin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    res.status(401);
-    throw new Error('Not authorized as an admin');
+    console.error(`[Admin Access Denied] User: ${req.user?._id} Role: ${req.user?.isAdmin ? 'Admin' : 'User'}`);
+    res.status(403).json({ message: "Accès refusé. Administrateurs uniquement." });
   }
 };
 

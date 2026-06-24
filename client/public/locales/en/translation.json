@@ -411,7 +411,10 @@
         "shipped": "Shipped",
         "delivered": "Delivered",
         "pending": "Pending",
-        "processing": "Processing"
+        "processing": "Processing",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "pending_whatsapp": "Pending WhatsApp"
       },
       "table": {
         "order": "Order",
@@ -609,6 +612,7 @@
       "qty": "Qty",
       "pay_amount": "Pay {{amount}}",
       "initializing_payment": "Initializing payment…",
+      "processing": "Processing...",
       "test_mode_notice": "",
       "sections": {
         "contact": "Contact details",
@@ -627,10 +631,12 @@
         "postal_code_required": "Postal code is required",
         "country_code_required": "Country is required",
         "payment_failed": "Payment failed",
-        "payment_not_completed": "Payment not completed"
+        "payment_not_completed": "Payment not completed",
+        "required_fields": "Please fill in all required fields"
       },
       "success": {
-        "payment_successful": "Payment successful"
+        "payment_successful": "Payment successful",
+        "redirecting_whatsapp": "Redirecting to WhatsApp..."
       }
     },
     "countries": {

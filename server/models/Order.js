@@ -27,35 +27,47 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid'],
+    enum: ['pending', 'paid', 'whatsapp'],
     default: 'pending'
   },
   status: {
     type: String,
-    enum: ['pending', 'shipped', 'delivered'],
+    enum: ['pending', 'pending_whatsapp', 'confirmed', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['stripe', 'whatsapp'],
+    default: 'stripe'
   },
   shippingAddress: {
     address: { type: String },
     city: { type: String },
     postalCode: { type: String },
     country: { type: String },
+    notes: { type: String }
   },
   phone: {
     type: String
   },
-  paymentIntentId: {
+    paymentIntentId: {
     type: String,
-    unique: true
+    unique: true,
+    sparse: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+  statusHistory: [{
+    status: String,
+    date: { type: Date, default: Date.now },
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }]
+}, {
+  timestamps: true
 });
 
 orderSchema.index({ user: 1 });
-orderSchema.index({ paymentIntentId: 1 });
+// paymentIntentId index is already defined as unique schema field
+
 orderSchema.index({ status: 1 });
+orderSchema.index({ paymentMethod: 1 });
 
 module.exports = mongoose.model('Order', orderSchema);

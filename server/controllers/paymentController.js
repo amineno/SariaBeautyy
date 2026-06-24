@@ -3,122 +3,153 @@ const Stripe = require('stripe');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
-// Initialize stripe inside a getter to ensure env vars are loaded
+// Feature flag for Stripe (default false in production unless specified)
+const ENABLE_STRIPE = process.env.ENABLE_STRIPE === 'true';
+
+// Helper to sanitize inputs
+const sanitize = (str) => (str ? String(str).replace(/[<>]/g, '').trim() : '');
+
+// Initializer for stripe (kept for future compatibility)
 const getStripe = () => {
+  if (!ENABLE_STRIPE) return null;
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
-    console.error('[Stripe Config Error] STRIPE_SECRET_KEY is missing in environment variables');
-    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+    throw new Error('STRIPE_SECRET_KEY is missing');
   }
-  
-  // Log partially for verification without exposing full secret
-  const keyHint = secretKey.startsWith('sk_test') ? 'Test Key' : 'Live Key';
-  console.log(`[Stripe Config] Initializing Stripe with ${keyHint}`);
-  
   return new Stripe(secretKey);
 };
 
+// @desc    WhatsApp Message Generator
+const generateWhatsAppMessage = (order, customer, address, orderItems) => {
+  let message = `🛒 *NOUVELLE COMMANDE*\n\n`;
+  message += `👤 *CLIENT:*\n`;
+  message += `Nom: ${customer.name}\n`;
+  message += `Email: ${customer.email}\n`;
+  message += `Téléphone: ${customer.phone}\n\n`;
+
+  message += `📍 *ADRESSE:*\n`;
+  message += `${address.address}, ${address.city}${address.postalCode ? `, ${address.postalCode}` : ''}\n`;
+  if (address.notes) message += `Notes: ${address.notes}\n`;
+  message += `\n`;
+
+  message += `🛍️ *PRODUITS:*\n`;
+  orderItems.forEach((item) => {
+    message += `- ${item.name} x${item.quantity} = ${(item.price * item.quantity).toFixed(2)} DT\n`;
+  });
+  message += `\n`;
+
+  message += `💰 *TOTAL: ${order.total.toFixed(2)} DT*\n\n`;
+  message += `📌 Merci de confirmer la commande.`;
+  return message;
+};
+
+// @desc    Create Stripe Payment Intent
+// @route   POST /api/payment/create-intent
+// @access  Private
 const createPaymentIntent = asyncHandler(async (req, res) => {
-  let stripe;
-  try {
-    stripe = getStripe();
-  } catch (err) {
-    console.error('[Stripe Config Error]', err.message);
-    res.status(500).json({ message: 'Payment provider configuration error' });
-    return;
+  if (!ENABLE_STRIPE) {
+    return res.status(400).json({ message: 'Stripe payments are currently disabled.' });
   }
 
-  const { items } = req.body;
+  // Original Stripe logic would go here...
+  res.status(400).json({ message: 'Stripe integration is currently paused.' });
+});
 
-  if (!items || !Array.isArray(items) || items.length === 0) {
+const StockService = require('../services/StockService');
+const WhatsAppService = require('../services/WhatsAppService');
+const { ORDER_STATUS, PAYMENT_METHOD } = require('../utils/constants');
+
+// @desc    Process order via WhatsApp
+// @route   POST /api/payment/whatsapp
+// @access  Private
+const createWhatsAppOrder = asyncHandler(async (req, res) => {
+  const { customer: rawCustomer, address: rawAddress, cart } = req.body;
+
+  // 1. Sanitize Inputs
+  const customer = {
+    name: sanitize(rawCustomer?.name),
+    email: sanitize(rawCustomer?.email),
+    phone: sanitize(rawCustomer?.phone),
+  };
+  const address = {
+    address: sanitize(rawAddress?.address),
+    city: sanitize(rawAddress?.city),
+    postalCode: sanitize(rawAddress?.postalCode),
+    country: sanitize(rawAddress?.country) || 'TN',
+    notes: sanitize(rawAddress?.notes),
+  };
+
+  // 2. Strict Validation
+  if (!cart || !Array.isArray(cart) || cart.length === 0) {
     res.status(400);
-    throw new Error('No items in cart');
+    throw new Error('Votre panier est vide');
   }
 
-  // Securely recalculate amount from DB
-  let amountCents = 0;
-  const safeItemsForMetadata = [];
+  if (!customer.name || !customer.email || !customer.phone) {
+    res.status(400);
+    throw new Error('Informations client incomplètes');
+  }
 
-  for (const item of items) {
-    const productId = item._id || item.productId;
-    const qty = Number(item.qty || item.quantity);
-    
-    // Validate quantity: must be integer between 1 and 100
-    if (!Number.isInteger(qty) || qty < 1 || qty > 100) {
-      res.status(400);
-      throw new Error(`Invalid quantity for product ${productId}`);
-    }
+  // 3. Backend-only Logic & Stock Protection
+  let subtotal = 0;
+  const verifiedItems = [];
+  const itemsForMessage = [];
 
+  for (const item of cart) {
+    const productId = item._id || item.product;
     const product = await Product.findById(productId);
+
     if (!product) {
       res.status(404);
-      throw new Error(`Product not found: ${productId}`);
+      throw new Error(`Produit non trouvé: ${productId}`);
     }
-    
-    if (product.price <= 0) {
+
+    const quantity = parseInt(item.quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+        res.status(400);
+        throw new Error(`Quantité invalide pour ${product.name}`);
+    }
+
+    // ATOMIC STOCK RESERVATION
+    const reserved = await StockService.deductStock(product._id, quantity);
+    if (!reserved) {
       res.status(400);
-      throw new Error(`Invalid price for product ${product.name}`);
+      throw new Error(`Désolé, stock insuffisant pour ${product.name}`);
     }
-    
-    // Amount in cents (backend price is USD)
-    // We use Math.round to avoid floating point issues
-    const priceInCents = Math.round(product.price * 100);
-    amountCents += priceInCents * qty;
-    
-    // Minimal data for metadata to stay within Stripe's limits (50 keys, 500 chars per value)
-    safeItemsForMetadata.push({
-      id: product._id.toString(),
-      qty: qty
-    });
+
+    subtotal += product.price * quantity;
+    verifiedItems.push({ product: product._id, quantity, price: product.price });
+    itemsForMessage.push({ name: product.name, quantity, price: product.price });
   }
 
-  // Final check for amount and currency
-  const currency = 'usd'; // Force USD as requested (not TND)
-  
-  if (!amountCents || isNaN(amountCents)) {
-    res.status(400);
-    throw new Error('Invalid total amount calculation');
-  }
+  const deliveryFee = 7.0;
+  const total = subtotal + deliveryFee;
 
-  if (amountCents < 50) { // Stripe minimum is 50 cents
-    res.status(400);
-    throw new Error('Total amount is too small (minimum $0.50)');
-  }
+  // 4. Save Order
+  const order = new Order({
+    user: req.user._id,
+    items: verifiedItems,
+    total,
+    paymentStatus: 'whatsapp',
+    status: ORDER_STATUS.PENDING_WHATSAPP,
+    paymentMethod: PAYMENT_METHOD.WHATSAPP,
+    shippingAddress: address,
+    phone: customer.phone,
+    statusHistory: [{ status: ORDER_STATUS.PENDING_WHATSAPP, date: new Date() }]
+  });
 
-  try {
-    console.log(`[Stripe] Creating PaymentIntent for ${amountCents} cents in ${currency}`);
-    
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amountCents), // Ensure it's an integer
-      currency: currency,
-      // Explicitly specify payment methods to avoid "No valid payment method types" error
-      // if Automatic Payment Methods aren't fully configured in the dashboard.
-      payment_method_types: ['card'],
-      metadata: {
-        userId: req.user._id.toString(),
-        items: JSON.stringify(safeItemsForMetadata)
-      }
-    });
-    
-    console.log(`[Stripe Success] PaymentIntent created: ${paymentIntent.id}`);
-    res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (err) {
-    console.error('[Stripe API Error Details]', {
-      message: err.message,
-      type: err.type,
-      code: err.code,
-      param: err.param,
-      requestId: err.requestId
-    });
-    
-    if (err.type === 'StripeAuthenticationError') {
-      res.status(401).json({ message: 'Invalid Stripe API Key. Check your environment variables.' });
-    } else if (err.type === 'StripeInvalidRequestError') {
-      res.status(400).json({ message: err.message });
-    } else {
-      res.status(502).json({ message: 'Stripe gateway error: ' + err.message });
-    }
-  }
+  await order.save();
+
+  // 5. Generate secure message
+  const message = WhatsAppService.generateOrderMessage(order, customer, address);
+  const whatsappUrl = WhatsAppService.generateWhatsAppUrl(message);
+
+  res.status(201).json({
+    success: true,
+    orderId: order._id,
+    whatsappUrl,
+    message // Sending the raw message too for CRM UI
+  });
 });
 
 // Webhook Handler for production-ready reliability
@@ -276,4 +307,4 @@ const getMyOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
-module.exports = { createPaymentIntent, stripeWebhook, createOrder, getMyOrders };
+module.exports = { createPaymentIntent, stripeWebhook, createOrder, getMyOrders, createWhatsAppOrder };
