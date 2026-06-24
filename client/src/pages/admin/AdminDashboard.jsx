@@ -11,7 +11,7 @@ import {
   BarChart3, RefreshCw, LayoutDashboard, 
   ChevronRight, ChevronDown, ChevronUp, Image as ImageIcon,
   DollarSign, Box, UserCheck, AlertCircle, X,
-  TrendingUp, Truck, Zap, Star, Target,
+  TrendingUp, Truck, Zap, Star, Target as TargetIcon,
   Download, MessageSquare
 } from 'lucide-react';
 
@@ -429,7 +429,7 @@ const AdminDashboard = () => {
                 ) : (
                   [
                     { label: 'Ventes Totales', value: formatPrice(stats.totalSales), icon: DollarSign, color: 'bg-emerald-50 text-emerald-600', trend: salesChangePercent ? `${salesChangePercent > 0 ? '+' : ''}${salesChangePercent.toFixed(1)}%` : '+0%' },
-                    { label: 'Conversion', value: `${stats.conversionRate || 0}%`, icon: Target, color: 'bg-indigo-50 text-indigo-600', trend: 'SaaS KPI' },
+                    { label: 'Conversion', value: `${stats.conversionRate || 0}%`, icon: TargetIcon, color: 'bg-indigo-50 text-indigo-600', trend: 'SaaS KPI' },
                     { label: 'WhatsApp / Stripe', value: `${stats.whatsappOrders || 0} / ${stats.stripeOrders || 0}`, icon: MessageSquare, color: 'bg-rose-50 text-rose-600', trend: 'Ratio' },
                     { label: 'Clients', value: stats.customers, icon: UserCheck, color: 'bg-amber-50 text-amber-600', trend: '+5%' },
                   ].map((stat, i) => (
