@@ -364,6 +364,36 @@ const AdminDashboard = () => {
     }
   };
 
+  const updateOrderPaymentStatus = async (id, status) => {
+    try {
+      const { data } = await api.put(`/admin/orders/${id}/payment`, { status }, authHeader);
+      setOrders(prev => prev.map(o => o._id === id ? data : o));
+      toast.success(t('admin.orders.payment_update_success') || 'Paiement mis à jour');
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Erreur lors de la mise à jour du paiement');
+    }
+  };
+
+  const deleteOrder = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: t('admin.orders.delete_confirm.title') || 'Supprimer la commande ?',
+      message: t('admin.orders.delete_confirm.text') || 'Cette action est irréversible et restaurera le stock.',
+      icon: AlertCircle,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        try {
+          const loadingToast = toast.loading(t('admin.common.deleting'));
+          await api.delete(`/admin/orders/${id}`, authHeader);
+          setOrders(prev => prev.filter(o => o._id !== id));
+          toast.success(t('admin.orders.delete_success') || 'Commande supprimée', { id: loadingToast });
+        } catch (e) {
+          toast.error('Erreur lors de la suppression');
+        }
+      }
+    });
+  };
+
   const sidebarItems = [
     { id: 'stats', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard },
     { id: 'products', label: t('admin.sidebar.products'), icon: Package },
@@ -1154,22 +1184,56 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex justify-end gap-2" onClick={e => e.stopPropagation()}>
+                              {/* Payment Status Toggle */}
+                              <button 
+                                onClick={() => updateOrderPaymentStatus(o._id, o.paymentStatus === 'paid' ? 'unpaid' : 'paid')}
+                                title={o.paymentStatus === 'paid' ? 'Marquer comme non payé' : 'Marquer comme payé'}
+                                className={`p-1.5 rounded-lg border transition-all ${
+                                  o.paymentStatus === 'paid' 
+                                    ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100' 
+                                    : 'bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100'
+                                }`}
+                              >
+                                <DollarSign size={14} />
+                              </button>
+
+                              {/* Shipping/Delivery Actions */}
                               {o.status === 'pending' && (
                                 <button 
                                   onClick={() => updateOrderStatus(o._id, 'shipped')}
-                                  className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors"
+                                  className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-lg transition-colors"
                                 >
-                                  {t('admin.orders.mark_shipped') || 'Mark Shipped'}
+                                  {t('admin.orders.mark_shipped') || 'Expédier'}
                                 </button>
                               )}
                               {o.status === 'shipped' && (
                                 <button 
                                   onClick={() => updateOrderStatus(o._id, 'delivered')}
-                                  className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg transition-colors"
+                                  className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 rounded-lg transition-colors"
                                 >
-                                  {t('admin.orders.mark_delivered')}
+                                  {t('admin.orders.mark_delivered') || 'Livrer'}
                                 </button>
                               )}
+                              
+                              {/* Cancel Action */}
+                              {['pending', 'shipped'].includes(o.status) && (
+                                <button 
+                                  onClick={() => updateOrderStatus(o._id, 'cancelled')}
+                                  title="Annuler la commande"
+                                  className="p-1.5 rounded-lg bg-gray-50 text-gray-500 border border-gray-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all"
+                                >
+                                  <X size={14} />
+                                </button>
+                              )}
+
+                              {/* Delete Action */}
+                              <button 
+                                onClick={() => deleteOrder(o._id)}
+                                title="Supprimer définitivement"
+                                className="p-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100 transition-all"
+                              >
+                                <Trash2 size={14} />
+                              </button>
                             </div>
                           </td>
                         </tr>

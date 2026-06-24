@@ -8,10 +8,10 @@ class OrderService {
    */
   isValidTransition(currentStatus, nextStatus) {
     const transitions = {
-      [ORDER_STATUS.PENDING]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
-      [ORDER_STATUS.PENDING_WHATSAPP]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
+      [ORDER_STATUS.PENDING]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.SHIPPED, ORDER_STATUS.CANCELLED],
+      [ORDER_STATUS.PENDING_WHATSAPP]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.SHIPPED, ORDER_STATUS.CANCELLED],
       [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.SHIPPED, ORDER_STATUS.CANCELLED],
-      [ORDER_STATUS.SHIPPED]: [ORDER_STATUS.DELIVERED],
+      [ORDER_STATUS.SHIPPED]: [ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
       [ORDER_STATUS.DELIVERED]: [],
       [ORDER_STATUS.CANCELLED]: []
     };
@@ -62,6 +62,41 @@ class OrderService {
     ).populate('user').populate('items.product');
 
     return updatedOrder;
+  }
+
+  /**
+   * Update order payment status
+   */
+  async updatePaymentStatus(orderId, paymentStatus) {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { paymentStatus },
+      { new: true }
+    ).populate('user').populate('items.product');
+    
+    if (!updatedOrder) throw new Error('Order not found');
+    return updatedOrder;
+  }
+
+  /**
+   * Delete order and restore stock if necessary
+   */
+  async deleteOrder(orderId) {
+    const order = await Order.findById(orderId).populate('items.product');
+    if (!order) throw new Error('Order not found');
+
+    // Restore stock if the order was not already cancelled and it's not a new/pending order that hasn't deducted stock?
+    // In this system, it seems stock is deducted during the pending phase (mostly).
+    if (order.status !== ORDER_STATUS.CANCELLED) {
+      for (const item of order.items) {
+        if (item.product) {
+          await StockService.restoreStock(item.product._id, item.quantity);
+        }
+      }
+    }
+
+    await Order.findByIdAndDelete(orderId);
+    return true;
   }
 
   /**

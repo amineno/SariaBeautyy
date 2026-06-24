@@ -101,8 +101,38 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+/**
+ * @desc Update Order Payment Status
+ */
+const updateOrderPaymentStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const orderId = req.params.id;
+
+    const updatedOrder = await OrderService.updatePaymentStatus(orderId, status);
+    res.json(updatedOrder);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+/**
+ * @desc Delete Order
+ */
+const deleteOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    await OrderService.deleteOrder(orderId);
+    res.json({ message: 'Order removed' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 module.exports = { 
   getAdminStats, 
   getAllOrders, 
-  updateOrderStatus 
+  updateOrderStatus,
+  updateOrderPaymentStatus,
+  deleteOrder
 };

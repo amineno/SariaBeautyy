@@ -32,4 +32,14 @@ router.get('/orders', getAllOrders);
  */
 router.put('/orders/:id/status', updateOrderStatus);
 
+/**
+ * @route PUT /api/admin/orders/:id/payment
+ */
+router.put('/orders/:id/payment', updateOrderPaymentStatus);
+
+/**
+ * @route DELETE /api/admin/orders/:id
+ */
+router.delete('/orders/:id', deleteOrder);
+
 module.exports = router;
