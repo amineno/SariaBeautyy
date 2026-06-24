@@ -5,7 +5,9 @@ const { adminRateLimiter } = require('../middleware/rateLimitMiddleware');
 const { 
   getAdminStats, 
   getAllOrders, 
-  updateOrderStatus 
+  updateOrderStatus,
+  updateOrderPaymentStatus,
+  deleteOrder
 } = require('../controllers/adminController');
 const { registerClient } = require('../utils/sse');
 
