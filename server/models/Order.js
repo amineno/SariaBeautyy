@@ -54,4 +54,8 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
+orderSchema.index({ user: 1 });
+orderSchema.index({ paymentIntentId: 1 });
+orderSchema.index({ status: 1 });
+
 module.exports = mongoose.model('Order', orderSchema);

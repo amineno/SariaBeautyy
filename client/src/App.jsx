@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Header from './components/Header';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useConfig } from './context/ConfigContext';
+import api from './api/axios';
 
 // Lazy loading for pages
 const Home = lazy(() => import('./pages/Home'));
@@ -44,93 +47,111 @@ const ConditionalFooter = () => {
   return <Footer />;
 };
 
+const InitialLoader = () => (
+  <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-gray-900 transition-colors duration-500">
+    <div className="relative">
+      <div className="w-24 h-24 border-2 border-primary/10 rounded-full animate-pulse"></div>
+      <div className="absolute inset-0 w-24 h-24 border-t-2 border-primary rounded-full animate-spin"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-2xl font-serif text-primary animate-pulse italic">SB</span>
+      </div>
+    </div>
+    <h1 className="mt-8 text-xl font-serif tracking-widest text-gray-800 dark:text-white uppercase animate-bounce-slow">
+      Saria Beauty
+    </h1>
+    <div className="mt-4 w-48 h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+      <div className="w-full h-full bg-primary origin-left animate-loading-bar"></div>
+    </div>
+    <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 font-light tracking-wider animate-pulse">
+      Initializing elegance...
+    </p>
+  </div>
+);
+
 function App() {
   const { i18n, t } = useTranslation();
+  const { googleClientId, loading } = useConfig();
 
   useEffect(() => {
     document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-    
-    // Wake up backend if it's sleeping (Render cold start)
-    const wakeUpBackend = async () => {
-      try {
-        await api.get('/ping');
-      } catch (e) {
-        // Ignore error, just a ping
-      }
-    };
-    wakeUpBackend();
   }, [i18n.language]);
 
+  if (loading) {
+    return <InitialLoader />;
+  }
+
   return (
-    <Router>
-      <Toaster 
-        position="top-right" 
-        reverseOrder={false}
-        toastOptions={{
-          className: 'glass-toast',
-          success: {
-            iconTheme: {
-              primary: '#B76E79',
-              secondary: '#fff',
+    <GoogleOAuthProvider clientId={googleClientId || 'loading'}>
+      <Router>
+        <Toaster 
+          position="top-right" 
+          reverseOrder={false}
+          toastOptions={{
+            className: 'glass-toast',
+            success: {
+              iconTheme: {
+                primary: '#B76E79',
+                secondary: '#fff',
+              },
+              style: {
+                borderLeft: '4px solid #B76E79',
+              }
             },
-            style: {
-              borderLeft: '4px solid #B76E79',
-            }
-          },
-          error: {
-            iconTheme: {
-              primary: '#e11d48',
-              secondary: '#fff',
+            error: {
+              iconTheme: {
+                primary: '#e11d48',
+                secondary: '#fff',
+              },
+              style: {
+                borderLeft: '4px solid #e11d48',
+              }
             },
-            style: {
-              borderLeft: '4px solid #e11d48',
-            }
-          },
-        }}
-      />
-      <div className="min-h-screen font-sans bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-        <Header />
-        <ChatAssistant />
-        <Suspense fallback={
-          <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300 backdrop-blur-sm">
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          }}
+        />
+        <div className="min-h-screen font-sans bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+          <Header />
+          <ChatAssistant />
+          <Suspense fallback={
+            <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300 backdrop-blur-sm">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <p className="mt-4 text-sm font-serif italic text-primary/60 dark:text-rose-400/60 animate-pulse">Saria Beauty</p>
             </div>
-            <p className="mt-4 text-sm font-serif italic text-primary/60 dark:text-rose-400/60 animate-pulse">Saria Beauty</p>
-          </div>
-        }>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/profile" element={<ProfileScreen />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/reviews" element={<Reviews />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-conditions" element={<TermsAndConditions />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={
-              <RequireAdmin>
-                <ErrorBoundary>
-                  <AdminDashboard />
-                </ErrorBoundary>
-              </RequireAdmin>
-            } />
-            <Route path="*" element={<NotFound t={t} />} />
-            {/* Add more routes here */}
-          </Routes>
-        </Suspense>
-        <ConditionalFooter />
-      </div>
-    </Router>
+          }>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/profile" element={<ProfileScreen />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-conditions" element={<TermsAndConditions />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin" element={
+                <RequireAdmin>
+                  <ErrorBoundary>
+                    <AdminDashboard />
+                  </ErrorBoundary>
+                </RequireAdmin>
+              } />
+              <Route path="*" element={<NotFound t={t} />} />
+            </Routes>
+          </Suspense>
+          <ConditionalFooter />
+        </div>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }
 
 export default App;
+

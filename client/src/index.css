@@ -4,6 +4,26 @@
 
 @config "../tailwind.config.js";
 
+@layer base {
+  :root {
+    --color-primary: 183 110 121; /* #B76E79 */
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 3s infinite;
+  }
+
+  @keyframes loading-bar {
+    0% { transform: scaleX(0); }
+    50% { transform: scaleX(0.7); }
+    100% { transform: scaleX(1); }
+  }
+
+  .animate-loading-bar {
+    animation: loading-bar 2s ease-in-out infinite;
+  }
+}
+
 @layer theme {
   :root {
     --color-rose-50: #fff1f2;

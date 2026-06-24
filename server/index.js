@@ -21,8 +21,6 @@ const pageRoutes = require('./routes/pageRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
-connectDB();
-
 const app = express();
 app.use(compression());
 const PORT = process.env.PORT || 5000;
@@ -30,9 +28,20 @@ const PORT = process.env.PORT || 5000;
 // Enable trust proxy for Render and rate limiting
 app.set('trust proxy', 1);
 
-// Lightweight ping endpoint to keep service alive
+// Liveness check
 app.get('/api/ping', (req, res) => {
   res.status(200).send('pong');
+});
+
+// Readiness check
+app.get('/api/health', (req, res) => {
+  const mongoose = require('mongoose');
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.status(dbStatus === 'connected' ? 200 : 503).json({
+    status: dbStatus === 'connected' ? 'UP' : 'DOWN',
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Stripe Webhook must be BEFORE express.json() for raw body access
@@ -49,7 +58,7 @@ app.post('/api/payment/webhook', webhookLimiter, express.raw({ type: 'applicatio
 // Global Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // increased for SSE and multiple tabs
+  max: 1000, // increased for production load
   message: 'Too many requests from this IP, please try again after 15 minutes',
   skip: (req) => req.path.endsWith('/events') // Skip rate limiting for SSE
 });
@@ -114,7 +123,7 @@ corsOptions.methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
 
 const createPaymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10, // stricter limit for payment intent creation
+  max: 10,
   message: 'Too many payment attempts, please try again after 15 minutes'
 });
 
@@ -125,11 +134,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        connectSrc: ["'self'", "https://api-m.sandbox.paypal.com", "https://api-m.paypal.com", "https://api.stripe.com"],
+        connectSrc: ["'self'", "https://api-m.sandbox.paypal.com", "https://api-m.paypal.com", "https://api.stripe.com", "*.sariabeauty.com"],
         frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https://*.stripe.com", "https://www.paypalobjects.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https://*.stripe.com", "https://www.paypalobjects.com", "https://res.cloudinary.com"],
       },
     },
     crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
@@ -263,17 +273,56 @@ const seedAboutPage = async () => {
   }
 };
 
-seedAdmin();
-seedAboutPage();
-
 app.use((err, req, res, next) => {
   if (err && err.message === 'Not allowed by CORS') {
     return res.status(403).json({ message: err.message });
   }
   const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
-  res.status(statusCode).json({ message: err.message || 'Server Error' });
+  res.status(statusCode).json({
+    message: err.message || 'Server Error',
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    // 1. Connect to Database FIRST
+    await connectDB();
+
+    // 2. Run Seeders
+    await seedAdmin();
+    await seedAboutPage();
+
+    // 3. Start Listening
+    const server = app.listen(PORT, () => {
+      console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    });
+
+    // 4. Graceful Shutdown
+    const shutdown = async () => {
+      console.log('Shutting down gracefully...');
+      server.close(async () => {
+        const mongoose = require('mongoose');
+        await mongoose.connection.close();
+        console.log('Server and DB connection closed.');
+        process.exit(0);
+      });
+
+      // Force exit after 10s
+      setTimeout(() => {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+
+  } catch (error) {
+    console.error(`Failed to start server: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();
+
