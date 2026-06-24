@@ -416,6 +416,18 @@
         "cancelled": "Annulée",
         "pending_whatsapp": "En attente WhatsApp"
       },
+      "delete_confirm": {
+        "title": "Supprimer la commande ?",
+        "text": "Êtes-vous sûr de vouloir supprimer définitivement cette commande ? Cela restaurera également le stock des produits."
+      },
+      "update_success": "Commande mise à jour avec succès",
+      "delete_success": "Commande supprimée avec succès",
+      "payment_update_success": "Statut du paiement mis à jour",
+      "shipping": {
+        "address": "Adresse",
+        "city": "Ville",
+        "postal": "Code Postal"
+      },
       "table": {
         "order": "Commande",
         "customer": "Client",

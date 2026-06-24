@@ -421,6 +421,18 @@
         "customer": "Customer",
         "shipping": "Shipping",
         "payment": "Payment"
+      },
+      "delete_confirm": {
+        "title": "Delete Order?",
+        "text": "Are you sure you want to permanently delete this order? This will also restore product stock."
+      },
+      "update_success": "Order updated successfully",
+      "delete_success": "Order deleted successfully",
+      "payment_update_success": "Payment status updated",
+      "shipping": {
+        "address": "Address",
+        "city": "City",
+        "postal": "Postal Code"
       }
     },
     "users": {

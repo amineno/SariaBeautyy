@@ -66,6 +66,8 @@ const AdminDashboard = () => {
     icon: null
   });
   const [expandedOrders, setExpandedOrders] = useState({});
+  const [editingOrderDetails, setEditingOrderDetails] = useState(null);
+  const [orderEditForm, setOrderEditForm] = useState({ address: '', city: '', postalCode: '', phone: '' });
 
   const monthlyStats = stats.monthly || [];
   const lastMonth = monthlyStats.length > 0 ? monthlyStats[monthlyStats.length - 1] : null;
@@ -377,8 +379,8 @@ const AdminDashboard = () => {
   const deleteOrder = (id) => {
     setConfirmModal({
       isOpen: true,
-      title: t('admin.orders.delete_confirm.title') || 'Supprimer la commande ?',
-      message: t('admin.orders.delete_confirm.text') || 'Cette action est irréversible et restaurera le stock.',
+      title: t('admin.orders.delete_confirm.title') || 'Confirmation de suppression',
+      message: t('admin.orders.delete_confirm.text') || 'Êtes-vous sûr de vouloir supprimer définitivement cette commande ? Cette action restaurera également le stock des produits.',
       icon: AlertCircle,
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
@@ -392,6 +394,25 @@ const AdminDashboard = () => {
         }
       }
     });
+  };
+
+  const handleOrderUpdate = async (e, id) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.put(`/admin/orders/${id}`, {
+        shippingAddress: {
+          address: orderEditForm.address,
+          city: orderEditForm.city,
+          postalCode: orderEditForm.postalCode
+        },
+        phone: orderEditForm.phone
+      }, authHeader);
+      setOrders(prev => prev.map(o => o._id === id ? data : o));
+      setEditingOrderDetails(null);
+      toast.success(t('admin.orders.update_success') || 'Commande mise à jour');
+    } catch (err) {
+      toast.error('Erreur lors de la mise à jour');
+    }
   };
 
   const sidebarItems = [
@@ -1268,33 +1289,103 @@ const AdminDashboard = () => {
                                 </div>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-700/50">
-                                  <div className="space-y-2">
-                                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                                      <Truck size={12} /> {t('admin.orders.shipping_address')}
-                                    </h4>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                                      {o.shippingAddress?.address ? (
-                                        <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                                          <p className="font-medium">{o.shippingAddress.address}</p>
-                                          <p>{o.shippingAddress.city}, {o.shippingAddress.postalCode}</p>
-                                          <p className="text-xs text-gray-500">{o.shippingAddress.country}</p>
+                                  <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                      <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                        <Truck size={12} /> {t('admin.orders.shipping_address')}
+                                      </h4>
+                                      {editingOrderDetails !== o._id ? (
+                                        <button 
+                                          onClick={() => {
+                                            setEditingOrderDetails(o._id);
+                                            setOrderEditForm({
+                                              address: o.shippingAddress?.address || '',
+                                              city: o.shippingAddress?.city || '',
+                                              postalCode: o.shippingAddress?.postalCode || '',
+                                              phone: o.phone || ''
+                                            });
+                                          }}
+                                          className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
+                                        >
+                                          <Pencil size={10} /> {t('common.edit') || 'Modifier'}
+                                        </button>
+                                      ) : null}
+                                    </div>
+                                    
+                                    {editingOrderDetails === o._id ? (
+                                      <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
+                                        <div className="space-y-2">
+                                          <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.address') || 'Adresse'}</label>
+                                          <input 
+                                            className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
+                                            value={orderEditForm.address} 
+                                            onChange={e => setOrderEditForm(f => ({ ...f, address: e.target.value }))}
+                                          />
                                         </div>
-                                      ) : (
-                                        <p className="text-sm text-gray-400 italic">{t('admin.orders.no_address')}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="space-y-2">
-                                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                                      <Zap size={12} /> {t('admin.orders.phone_number')}
-                                    </h4>
-                                    <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                                      {o.phone ? (
-                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{o.phone}</p>
-                                      ) : (
-                                        <p className="text-sm text-gray-400 italic">{t('admin.orders.no_phone')}</p>
-                                      )}
-                                    </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.city') || 'Ville'}</label>
+                                            <input 
+                                              className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
+                                              value={orderEditForm.city} 
+                                              onChange={e => setOrderEditForm(f => ({ ...f, city: e.target.value }))}
+                                            />
+                                          </div>
+                                          <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.shipping.postal') || 'Code Postal'}</label>
+                                            <input 
+                                              className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
+                                              value={orderEditForm.postalCode} 
+                                              onChange={e => setOrderEditForm(f => ({ ...f, postalCode: e.target.value }))}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <label className="text-[10px] font-bold text-gray-400 uppercase">{t('admin.orders.phone_number')}</label>
+                                          <input 
+                                            className="w-full px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg" 
+                                            value={orderEditForm.phone} 
+                                            onChange={e => setOrderEditForm(f => ({ ...f, phone: e.target.value }))}
+                                          />
+                                        </div>
+                                        <div className="flex gap-2 pt-2">
+                                          <button 
+                                            onClick={(e) => handleOrderUpdate(e, o._id)}
+                                            className="flex-1 py-2 text-xs font-bold bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                          >
+                                            {t('common.save') || 'Enregistrer'}
+                                          </button>
+                                          <button 
+                                            onClick={() => setEditingOrderDetails(null)}
+                                            className="px-4 py-2 text-xs font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                                          >
+                                            {t('common.cancel')}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                          {o.shippingAddress?.address ? (
+                                            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                              <p className="font-medium">{o.shippingAddress.address}</p>
+                                              <p>{o.shippingAddress.city}, {o.shippingAddress.postalCode}</p>
+                                              <p className="text-xs text-gray-500">{o.shippingAddress.country}</p>
+                                            </div>
+                                          ) : (
+                                            <p className="text-sm text-gray-400 italic">{t('admin.orders.no_address')}</p>
+                                          )}
+                                        </div>
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                                          <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-1">{t('admin.orders.phone_number')}</h4>
+                                          {o.phone ? (
+                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{o.phone}</p>
+                                          ) : (
+                                            <p className="text-sm text-gray-400 italic">{t('admin.orders.no_phone')}</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>

@@ -100,6 +100,26 @@ class OrderService {
   }
 
   /**
+   * Update order details (shipping, phone)
+   */
+  async updateOrderDetails(orderId, details) {
+    const { shippingAddress, phone } = details;
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { 
+        $set: { 
+          shippingAddress, 
+          phone 
+        } 
+      },
+      { new: true }
+    ).populate('user').populate('items.product');
+
+    if (!updatedOrder) throw new Error('Order not found');
+    return updatedOrder;
+  }
+
+  /**
    * Calculate total and verify items
    */
   async createAndValidateItems(cart) {

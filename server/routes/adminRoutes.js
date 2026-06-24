@@ -7,6 +7,7 @@ const {
   getAllOrders, 
   updateOrderStatus,
   updateOrderPaymentStatus,
+  updateOrderDetails,
   deleteOrder
 } = require('../controllers/adminController');
 const { registerClient } = require('../utils/sse');
@@ -38,6 +39,11 @@ router.put('/orders/:id/status', updateOrderStatus);
  * @route PUT /api/admin/orders/:id/payment
  */
 router.put('/orders/:id/payment', updateOrderPaymentStatus);
+
+/**
+ * @route PUT /api/admin/orders/:id
+ */
+router.put('/orders/:id', updateOrderDetails);
 
 /**
  * @route DELETE /api/admin/orders/:id
