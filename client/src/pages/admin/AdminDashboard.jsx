@@ -1074,7 +1074,7 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex justify-end gap-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                            <div className="flex justify-end gap-2.5">
                               <button 
                                 onClick={() => editProduct(p)} 
                                 className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/20 transition-all duration-200 border border-amber-100 dark:border-amber-900/20 hover:scale-110 active:scale-95 shadow-sm"
