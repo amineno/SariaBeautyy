@@ -50,7 +50,7 @@ const OrderConfirmation = ({ whatsappUrl, total, formatPrice }) => {
   );
 };
 
-const CheckoutForm = ({ cartItems, subtotal, onSuccess }) => {
+const CheckoutForm = ({ cartItems, subtotal, onSuccess, currencySymbol, currencyRate }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -98,17 +98,19 @@ const CheckoutForm = ({ cartItems, subtotal, onSuccess }) => {
           quantity: item.qty || item.quantity,
           price: item.price
         })),
+        currency: currencySymbol,
+        rate: currencyRate,
         totals: {
           subtotal: subtotal,
-          delivery: 7,
-          total: subtotal + 7
+          delivery: 0,
+          total: subtotal
         }
       };
 
       const { data } = await api.post('/payment/whatsapp', orderData);
 
       if (data.success && data.whatsappUrl) {
-        onSuccess(data.whatsappUrl, subtotal + 7);
+        onSuccess(data.whatsappUrl, subtotal);
       } else {
         throw new Error('Failed to generate WhatsApp order');
       }
@@ -290,7 +292,7 @@ const Checkout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { cartItems, clearCart } = useCart();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency, symbols, rates } = useCurrency();
   const { user } = useAuth();
   const [orderSummary, setOrderSummary] = useState(null);
 
@@ -360,6 +362,8 @@ const Checkout = () => {
             cartItems={cartItems}
             subtotal={subtotal}
             onSuccess={handleOrderSuccess}
+            currencySymbol={symbols[currency] || 'DT'}
+            currencyRate={rates ? rates[currency] : 1}
           />
         </div>
 
@@ -402,11 +406,11 @@ const Checkout = () => {
             </div>
             <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
               <span>{t('cart.summary.shipping')}</span>
-              <span>7.00 DT</span>
+              <span className="font-bold text-green-600">GRATUITE</span>
             </div>
             <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
               <span>{t('cart.summary.total')}</span>
-              <span>{formatPrice(subtotal + 7)}</span>
+              <span className="text-primary">{formatPrice(subtotal)}</span>
             </div>
           </div>
         </div>

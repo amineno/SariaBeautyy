@@ -63,7 +63,7 @@ const { ORDER_STATUS, PAYMENT_METHOD } = require('../utils/constants');
 // @route   POST /api/payment/whatsapp
 // @access  Private
 const createWhatsAppOrder = asyncHandler(async (req, res) => {
-  const { customer: rawCustomer, address: rawAddress, cart } = req.body;
+  const { customer: rawCustomer, address: rawAddress, cart, currency = 'DT', rate = 1 } = req.body;
 
   // 1. Sanitize Inputs
   const customer = {
@@ -118,12 +118,19 @@ const createWhatsAppOrder = asyncHandler(async (req, res) => {
     }
 
     subtotal += product.price * quantity;
-    verifiedItems.push({ product: product._id, quantity, price: product.price });
-    itemsForMessage.push({ name: product.name, quantity, price: product.price });
+    verifiedItems.push({ 
+      product: product._id, 
+      quantity, 
+      price: product.price,
+      convertedPrice: product.price * rate,
+      name: product.name,
+      image: product.image
+    });
   }
 
-  const deliveryFee = 7.0;
+  const deliveryFee = 0.0;
   const total = subtotal + deliveryFee;
+  const convertedTotal = total * rate;
 
   // 4. Save Order
   const order = new Order({
@@ -141,7 +148,7 @@ const createWhatsAppOrder = asyncHandler(async (req, res) => {
   await order.save();
 
   // 5. Generate secure message
-  const message = WhatsAppService.generateOrderMessage(order, customer, address);
+  const message = WhatsAppService.generateOrderMessage(order, customer, address, currency, verifiedItems, convertedTotal);
   const whatsappUrl = WhatsAppService.generateWhatsAppUrl(message);
 
   res.status(201).json({
